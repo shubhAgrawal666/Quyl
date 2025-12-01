@@ -1,7 +1,7 @@
 # Quyl
 ## Frontend-0%
 ## Backend-->
-## Model-80%
-## Controller-30%
+## Model-100%
+## Controller-100%
 ## Routes-0%
-## Others-30%
+## Others-85%
