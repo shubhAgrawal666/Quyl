@@ -1,7 +1,6 @@
 // course+lessons
 import mongoose from "mongoose";
 
-// LESSON SCHEMA
 const lessonSchema = new mongoose.Schema(
   {
     title: {
@@ -14,14 +13,13 @@ const lessonSchema = new mongoose.Schema(
       required: true,
     },
     duration: {
-      type: String, // Example: "10:25"
+      type: String,
       default: "0:00",
-    }
+    },
   },
   { timestamps: true }
 );
 
-// COURSE SCHEMA
 const courseSchema = new mongoose.Schema(
   {
     title: {
@@ -41,27 +39,27 @@ const courseSchema = new mongoose.Schema(
     },
 
     thumbnail: {
-      type: String, // store image URL
+      type: String,
       required: true,
     },
 
-    lessons: [lessonSchema], // Embedded array of lessons
+    lessons: [lessonSchema],
 
     studentsEnrolled: [
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-      }
+      },
     ],
 
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User", // Admin ID
+      ref: "User",
       required: true,
     },
   },
   { timestamps: true }
 );
-const Course =mongoose.models.Course || mongoose.model("Course", courseSchema);
+const Course = mongoose.models.Course || mongoose.model("Course", courseSchema);
 
 export default Course;

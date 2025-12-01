@@ -1,10 +1,10 @@
-//Helper to create JWT token
+// JWT token
 import jwt from "jsonwebtoken";
 
 const generateToken = (user) => {
   return jwt.sign(
     {
-      id: user._id,     
+      id: user._id,
       role: user.role,
     },
     process.env.JWT_SECRET,

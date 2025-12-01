@@ -27,9 +27,8 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    // Generate OTP for email verification
     const otp = String(Math.floor(Math.random() * 900000 + 100000));
-    const otpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const otpExpires = Date.now() + 10 * 60 * 1000;
 
     const user = new User({
       name,
@@ -42,7 +41,6 @@ export const register = async (req, res) => {
 
     await user.save();
 
-    // Send OTP email
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to: email,
@@ -100,7 +98,6 @@ export const verifyEmail = async (req, res) => {
     user.otpExpires = undefined;
     await user.save();
 
-    // Generate token only after verification
     const token = generateToken(user);
 
     res.cookie("token", token, {
@@ -175,7 +172,6 @@ export const login = async (req, res) => {
       return res.json({ success: false, message: "User does not exist!" });
     }
 
-    // Check if email is verified
     if (!user.isVerified) {
       return res.json({
         success: false,
@@ -243,7 +239,7 @@ export const sendResetOtp = async (req, res) => {
     }
 
     const otp = String(Math.floor(Math.random() * 900000 + 100000));
-    const resetOtpExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+    const resetOtpExpires = Date.now() + 10 * 60 * 1000;
 
     user.resetOtp = otp;
     user.resetOtpExpires = resetOtpExpires;

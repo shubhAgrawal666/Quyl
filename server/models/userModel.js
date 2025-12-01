@@ -21,15 +21,13 @@ const userSchema = new mongoose.Schema(
       minlength: 8,
     },
 
-    // Email verification
-    otp: { type: String, default: "",select:false },
-    otpExpires: { type: Date,select:false },
+    otp: { type: String, default: "", select: false },
+    otpExpires: { type: Date, select: false },
 
     isVerified: { type: Boolean, default: false },
 
-    // Reset password OTP
-    resetOtp: { type: String, default: "",select:false },
-    resetOtpExpires: { type: Date,select:false },
+    resetOtp: { type: String, default: "", select: false },
+    resetOtpExpires: { type: Date, select: false },
 
     role: {
       type: String,
@@ -41,13 +39,12 @@ const userSchema = new mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Course",
-      }
+      },
     ],
   },
   { timestamps: true }
 );
 
-const User =
-  mongoose.models.User || mongoose.model("User", userSchema);
+const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export default User;

@@ -16,7 +16,7 @@ const progressSchema = new mongoose.Schema(
     },
 
     completedLessons: {
-      type: [Number], // array of lesson indexes
+      type: [Number],
       default: [],
     },
   },
