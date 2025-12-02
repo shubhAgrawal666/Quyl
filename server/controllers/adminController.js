@@ -3,7 +3,8 @@ import User from "../models/userModel.js";
 import Course from "../models/courseModel.js";
 import Progress from "../models/ProgressModel.js";
 import generateToken from "../utils/generateToken.js";
-
+import transporter from "../config/nodemailer.js";
+import "dotenv/config";
 export const createAdmin = async (req, res) => {
   try {
     const { name, email, password, key } = req.body;
@@ -29,7 +30,7 @@ export const createAdmin = async (req, res) => {
         message: "Password must be at least 8 characters long",
       });
     }
-
+    console.log(process.env.ADMIN_SECRET_KEY);
     if (key !== process.env.ADMIN_SECRET_KEY) {
       return res.status(403).json({
         success: false,
@@ -54,6 +55,23 @@ export const createAdmin = async (req, res) => {
       role: "admin",
       isVerified: true,
     });
+
+    const mailOptions = {
+      from: process.env.GMAIL_USER,
+      to: email,
+      subject: "Verify Your Email - OTP",
+      html: `
+        <h2>Welcome, ${name}!</h2>
+          <p>Your admin account has been successfully created.</p>
+          <p><strong>Email:</strong> ${email}</p>
+          <p>You can now log in and manage the platform.</p>
+          <br/>
+          <p>– QUYL Admin Team</p>
+      `,
+    };
+
+    await transporter.sendMail(mailOptions);
+
 
     res.status(201).json({
       success: true,
@@ -92,7 +110,15 @@ export const adminLogin = async (req, res) => {
     if (!admin) {
       return res.status(401).json({
         success: false,
-        message: "Invalid credentials",
+        message: "You are not an Admin",
+      });
+    }
+    if (!admin.isVerified) {
+      return res.json({
+        success: false,
+        message: "Please verify your email first",
+        userId: admin._id,
+        needsVerification: true,
       });
     }
 
@@ -132,7 +158,19 @@ export const adminLogin = async (req, res) => {
     });
   }
 };
+export const adminLogout = async (req, res) => {
+  try {
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "strict",
+    });
 
+    return res.json({ success: true, message: "Logged Out!" });
+  } catch (error) {
+    return res.json({ success: false, message: error.message });
+  }
+};
 export const getAllUsers = async (req, res) => {
   try {
     const { role, search, page = 1, limit = 20 } = req.query;
@@ -175,9 +213,18 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-export const getUserById = async (req, res) => {
+export const getUserByEmail = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id)
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const user = await User.findOne({ email })
       .select("-password -otp -otpExpires -resetOtp -resetOtpExpires")
       .populate("enrolledCourses", "title category thumbnail");
 
@@ -199,7 +246,7 @@ export const getUserById = async (req, res) => {
       progress,
     });
   } catch (error) {
-    console.error("Get user error:", error);
+    console.error("Get user by email error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch user details",
@@ -207,14 +254,15 @@ export const getUserById = async (req, res) => {
   }
 };
 
+
 export const updateUserRole = async (req, res) => {
   try {
-    const { userId, role } = req.body;
+    const { email, role } = req.body;
 
-    if (!userId || !role) {
+    if (!email || !role) {
       return res.status(400).json({
         success: false,
-        message: "User ID and role are required",
+        message: "Email and role are required",
       });
     }
 
@@ -225,7 +273,7 @@ export const updateUserRole = async (req, res) => {
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findOne({email});
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -233,7 +281,7 @@ export const updateUserRole = async (req, res) => {
       });
     }
 
-    if (req.user._id.toString() === userId) {
+    if (req.user.email === email) {
       return res.status(403).json({
         success: false,
         message: "You cannot change your own role",
@@ -264,9 +312,15 @@ export const updateUserRole = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
-    const userId = req.params.id;
+    const { email } = req.params;
 
-    const user = await User.findById(userId);
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+    const user = await User.findOne({email});
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -274,7 +328,7 @@ export const deleteUser = async (req, res) => {
       });
     }
 
-    if (req.user._id.toString() === userId) {
+    if (req.user.email === email) {
       return res.status(403).json({
         success: false,
         message: "You cannot delete your own account",
@@ -282,13 +336,13 @@ export const deleteUser = async (req, res) => {
     }
 
     await Course.updateMany(
-      { studentsEnrolled: userId },
-      { $pull: { studentsEnrolled: userId } }
+      { studentsEnrolled: user._id },
+      { $pull: { studentsEnrolled: user._id } }
     );
 
-    await Progress.deleteMany({ userId });
+    await Progress.deleteMany(user._id);
 
-    await User.findByIdAndDelete(userId);
+    await User.findByIdAndDelete(user._id);
 
     res.status(200).json({
       success: true,
@@ -346,24 +400,32 @@ export const getDashboardStats = async (req, res) => {
 
 export const toggleUserVerification = async (req, res) => {
   try {
-    const { userId } = req.body;
+    const { email } = req.body;
 
-    if (!userId) {
+    if (!email) {
       return res.status(400).json({
         success: false,
         message: "User ID is required",
       });
     }
 
-    const user = await User.findById(userId);
+    const user = await User.findOne({email});
     if (!user) {
       return res.status(404).json({
         success: false,
         message: "User not found",
       });
     }
-
+    if (req.user.email === email) {
+      return res.status(403).json({
+        success: false,
+        message: "You cannot change your own Verification Status",
+      });
+    }
     user.isVerified = !user.isVerified;
+    if(!user.isVerified && user.role==="admin"){
+      user.role="student";
+    }
     await user.save();
 
     res.status(200).json({
@@ -376,6 +438,7 @@ export const toggleUserVerification = async (req, res) => {
         name: user.name,
         email: user.email,
         isVerified: user.isVerified,
+        role:user.role
       },
     });
   } catch (error) {

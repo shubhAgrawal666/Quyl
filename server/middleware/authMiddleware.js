@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import User from "../models/User.js";
+import User from "../models/userModel.js";
 import "dotenv/config";
 
 const authMiddleware = async (req, res, next) => {
@@ -17,7 +17,8 @@ const authMiddleware = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    const user = await User.findById(decoded._id).select(
+    // console.log(decoded._id);
+    const user = await User.findById(decoded.id).select(
       "-password -otp -otpExpires -resetOtp -resetOtpExpires"
     );
 

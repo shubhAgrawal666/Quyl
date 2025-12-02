@@ -11,6 +11,7 @@ import {
   isAuthenticated
 } from "../controllers/authController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
+import "dotenv/config";
 
 const router = express.Router();
 
