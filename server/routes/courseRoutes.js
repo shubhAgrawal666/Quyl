@@ -3,7 +3,7 @@ import express from "express";
 import {
   createCourse,
   getCourses,
-  getCourseById,
+  getCourseBySlug,
   updateCourse,
   deleteCourse,
   addLesson,
@@ -12,7 +12,7 @@ import {
   enrollCourse,
   markLessonComplete,
   getProgress,
-  getEnrolledCourses
+  getEnrolledCourses,
 } from "../controllers/courseController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -20,17 +20,21 @@ import { isAdmin } from "../middleware/roleMiddleware.js";
 
 const router = express.Router();
 router.get("/", getCourses);
-router.get("/:id", getCourseById);
+router.get("/:slug", getCourseBySlug);
 router.post("/create", authMiddleware, isAdmin, createCourse);
-router.put("/update/:id", authMiddleware, isAdmin, updateCourse);
-router.delete("/delete/:id", authMiddleware, isAdmin, deleteCourse);
-router.post("/:id/lessons/add", authMiddleware, isAdmin, addLesson);
-router.put("/:courseId/lessons/:lessonId", authMiddleware, isAdmin, updateLesson);
-router.delete("/:courseId/lessons/:lessonId", authMiddleware, isAdmin, deleteLesson);
+router.put("/update/:slug", authMiddleware, isAdmin, updateCourse);
+router.delete("/delete/:slug", authMiddleware, isAdmin, deleteCourse);
+router.post("/:slug/lessons/add", authMiddleware, isAdmin, addLesson);
+router.put("/:slug/lessons/:lessonSlug", authMiddleware, isAdmin, updateLesson);
+router.delete(
+  "/:slug/lessons/:lessonSlug",
+  authMiddleware,
+  isAdmin,
+  deleteLesson
+);
 router.post("/enroll", authMiddleware, enrollCourse);
 router.post("/complete-lesson", authMiddleware, markLessonComplete);
-router.get("/progress/:courseId", authMiddleware, getProgress);
+router.get("/progress/:slug", authMiddleware, getProgress);
 router.get("/my/enrolled", authMiddleware, getEnrolledCourses);
-
 
 export default router;

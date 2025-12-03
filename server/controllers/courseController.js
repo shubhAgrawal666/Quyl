@@ -26,9 +26,17 @@ export const createCourse = async (req, res) => {
       success: true,
       message: "Course created successfully",
       course,
+      slug: course.slug,
+      url: `/courses/${course.slug}`,
     });
   } catch (error) {
     console.error("Create course error:", error);
+    if (error.code === 11000 && error.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A course with a similar title already exists",
+      });
+    }
     res.status(500).json({
       success: false,
       message: "Failed to create course",
@@ -69,9 +77,11 @@ export const getCourses = async (req, res) => {
   }
 };
 
-export const getCourseById = async (req, res) => {
+export const getCourseBySlug = async (req, res) => {
   try {
-    const course = await Course.findById(req.params.id)
+    const { slug } = req.params;
+
+    const course = await Course.findOne({ slug })
       .populate("createdBy", "name email")
       .populate("studentsEnrolled", "name email");
 
@@ -87,7 +97,7 @@ export const getCourseById = async (req, res) => {
       course,
     });
   } catch (error) {
-    console.error("Get course error:", error);
+    console.error("Get course by slug error:", error);
     res.status(500).json({
       success: false,
       message: "Failed to fetch course",
@@ -98,12 +108,9 @@ export const getCourseById = async (req, res) => {
 export const updateCourse = async (req, res) => {
   try {
     const { title, description, category, thumbnail } = req.body;
+    const { slug } = req.params;
 
-    const course = await Course.findByIdAndUpdate(
-      req.params.id,
-      { title, description, category, thumbnail },
-      { new: true, runValidators: true }
-    );
+    const course = await Course.findOne({ slug });
 
     if (!course) {
       return res.status(404).json({
@@ -112,13 +119,28 @@ export const updateCourse = async (req, res) => {
       });
     }
 
+    if (title) course.title = title;
+    if (description) course.description = description;
+    if (category) course.category = category;
+    if (thumbnail) course.thumbnail = thumbnail;
+
+    await course.save();
+
     res.status(200).json({
       success: true,
       message: "Course updated successfully",
       course,
+      slug: course.slug,
+      url: `/courses/${course.slug}`,
     });
   } catch (error) {
     console.error("Update course error:", error);
+    if (error.code === 11000 && error.keyPattern?.slug) {
+      return res.status(409).json({
+        success: false,
+        message: "A course with this title already exists",
+      });
+    }
     res.status(500).json({
       success: false,
       message: "Failed to update course",
@@ -128,7 +150,8 @@ export const updateCourse = async (req, res) => {
 
 export const deleteCourse = async (req, res) => {
   try {
-    const course = await Course.findByIdAndDelete(req.params.id);
+    const { slug } = req.params;
+    const course = await Course.findOne({ slug });
 
     if (!course) {
       return res.status(404).json({
@@ -138,11 +161,12 @@ export const deleteCourse = async (req, res) => {
     }
 
     await User.updateMany(
-      { enrolledCourses: req.params.id },
-      { $pull: { enrolledCourses: req.params.id } }
+      { enrolledCourses: course._id },
+      { $pull: { enrolledCourses: course._id } }
     );
 
-    await Progress.deleteMany({ courseId: req.params.id });
+    await Progress.deleteMany({ courseId: course._id });
+    await Course.findByIdAndDelete(course._id);
 
     res.status(200).json({
       success: true,
@@ -160,6 +184,7 @@ export const deleteCourse = async (req, res) => {
 export const addLesson = async (req, res) => {
   try {
     const { title, youtubeUrl, duration } = req.body;
+    const { slug } = req.params;
 
     if (!title || !youtubeUrl) {
       return res.status(400).json({
@@ -168,7 +193,7 @@ export const addLesson = async (req, res) => {
       });
     }
 
-    const course = await Course.findById(req.params.id);
+    const course = await Course.findOne({ slug });
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -195,10 +220,10 @@ export const addLesson = async (req, res) => {
 
 export const updateLesson = async (req, res) => {
   try {
-    const { courseId, lessonId } = req.params;
+    const { slug, lessonSlug } = req.params;
     const { title, youtubeUrl, duration } = req.body;
 
-    const course = await Course.findById(courseId);
+    const course = await Course.findOne({ slug });
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -206,7 +231,7 @@ export const updateLesson = async (req, res) => {
       });
     }
 
-    const lesson = course.lessons.id(lessonId);
+    const lesson = course.lessons.find((l) => l.slug === lessonSlug);
     if (!lesson) {
       return res.status(404).json({
         success: false,
@@ -236,9 +261,9 @@ export const updateLesson = async (req, res) => {
 
 export const deleteLesson = async (req, res) => {
   try {
-    const { courseId, lessonId } = req.params;
+    const { slug, lessonSlug } = req.params;
 
-    const course = await Course.findById(courseId);
+    const course = await Course.findOne({ slug });
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -246,9 +271,7 @@ export const deleteLesson = async (req, res) => {
       });
     }
 
-    const lessonIndex = course.lessons.findIndex(
-      (l) => l._id.toString() === lessonId
-    );
+    const lessonIndex = course.lessons.findIndex((l) => l.slug === lessonSlug);
 
     if (lessonIndex === -1) {
       return res.status(404).json({
@@ -261,7 +284,7 @@ export const deleteLesson = async (req, res) => {
     await course.save();
 
     await Progress.updateMany(
-      { courseId, completedLessons: lessonIndex },
+      { courseId: course._id, completedLessons: lessonIndex },
       { $pull: { completedLessons: lessonIndex } }
     );
 
@@ -281,10 +304,10 @@ export const deleteLesson = async (req, res) => {
 
 export const enrollCourse = async (req, res) => {
   try {
-    const { courseId } = req.body;
+    const { slug } = req.body;
     const userId = req.user._id;
 
-    const course = await Course.findById(courseId);
+    const course = await Course.findOne({ slug });
     if (!course) {
       return res.status(404).json({
         success: false,
@@ -292,7 +315,7 @@ export const enrollCourse = async (req, res) => {
       });
     }
 
-    if (req.user.enrolledCourses.includes(courseId)) {
+    if (req.user.enrolledCourses.includes(course._id)) {
       return res.status(400).json({
         success: false,
         message: "You are already enrolled in this course",
@@ -300,16 +323,16 @@ export const enrollCourse = async (req, res) => {
     }
 
     await User.findByIdAndUpdate(userId, {
-      $addToSet: { enrolledCourses: courseId },
+      $addToSet: { enrolledCourses: course._id },
     });
 
-    await Course.findByIdAndUpdate(courseId, {
+    await Course.findByIdAndUpdate(course._id, {
       $addToSet: { studentsEnrolled: userId },
     });
 
     await Progress.create({
       userId,
-      courseId,
+      courseId: course._id,
       completedLessons: [],
     });
 
@@ -328,7 +351,7 @@ export const enrollCourse = async (req, res) => {
 
 export const markLessonComplete = async (req, res) => {
   try {
-    const { courseId, lessonIndex } = req.body;
+    const { slug, lessonIndex } = req.body;
     const userId = req.user._id;
 
     if (typeof lessonIndex !== "number" || lessonIndex < 0) {
@@ -338,19 +361,27 @@ export const markLessonComplete = async (req, res) => {
       });
     }
 
-    if (!req.user.enrolledCourses.includes(courseId)) {
+    const course = await Course.findOne({ slug });
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    if (!req.user.enrolledCourses.includes(course._id)) {
       return res.status(403).json({
         success: false,
         message: "You must be enrolled in this course",
       });
     }
 
-    let progress = await Progress.findOne({ userId, courseId });
+    let progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
       progress = await Progress.create({
         userId,
-        courseId,
+        courseId: course._id,
         completedLessons: [lessonIndex],
       });
     } else {
@@ -376,10 +407,18 @@ export const markLessonComplete = async (req, res) => {
 
 export const getProgress = async (req, res) => {
   try {
-    const { courseId } = req.params;
+    const { slug } = req.params;
     const userId = req.user._id;
 
-    const progress = await Progress.findOne({ userId, courseId });
+    const course = await Course.findOne({ slug });
+    if (!course) {
+      return res.status(404).json({
+        success: false,
+        message: "Course not found",
+      });
+    }
+
+    const progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
       return res.status(200).json({

@@ -30,7 +30,7 @@ export const createAdmin = async (req, res) => {
         message: "Password must be at least 8 characters long",
       });
     }
-    console.log(process.env.ADMIN_SECRET_KEY);
+    // console.log(process.env.ADMIN_SECRET_KEY);
     if (key !== process.env.ADMIN_SECRET_KEY) {
       return res.status(403).json({
         success: false,
@@ -71,7 +71,6 @@ export const createAdmin = async (req, res) => {
     };
 
     await transporter.sendMail(mailOptions);
-
 
     res.status(201).json({
       success: true,
@@ -254,7 +253,6 @@ export const getUserByEmail = async (req, res) => {
   }
 };
 
-
 export const updateUserRole = async (req, res) => {
   try {
     const { email, role } = req.body;
@@ -273,7 +271,7 @@ export const updateUserRole = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -320,7 +318,7 @@ export const deleteUser = async (req, res) => {
         message: "Email is required",
       });
     }
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -409,7 +407,7 @@ export const toggleUserVerification = async (req, res) => {
       });
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({ email });
     if (!user) {
       return res.status(404).json({
         success: false,
@@ -423,8 +421,8 @@ export const toggleUserVerification = async (req, res) => {
       });
     }
     user.isVerified = !user.isVerified;
-    if(!user.isVerified && user.role==="admin"){
-      user.role="student";
+    if (!user.isVerified && user.role === "admin") {
+      user.role = "student";
     }
     await user.save();
 
@@ -438,7 +436,7 @@ export const toggleUserVerification = async (req, res) => {
         name: user.name,
         email: user.email,
         isVerified: user.isVerified,
-        role:user.role
+        role: user.role,
       },
     });
   } catch (error) {
