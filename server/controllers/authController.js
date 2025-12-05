@@ -69,13 +69,13 @@ export const register = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
-    const { email, otp } = req.body;
+    const { userId, otp } = req.body;
 
-    if (!email || !otp) {
+    if (!userId || !otp) {
       return res.json({ success: false, message: "Missing Details!" });
     }
 
-    const user = await User.findOne({email}).select("+otp +otpExpires");
+    const user = await User.findById(userId).select("+otp +otpExpires");
 
     if (!user) {
       return res.json({ success: false, message: "User doesn't exist!" });
@@ -115,13 +115,13 @@ export const verifyEmail = async (req, res) => {
 
 export const resendOTP = async (req, res) => {
   try {
-    const { email } = req.body;
+    const { userId } = req.body;
 
-    if (!email) {
+    if (!userId) {
       return res.json({ success: false, message: "User ID is required" });
     }
 
-    const user = await User.findOne({email});
+    const user = await User.findById(userId);
 
     if (!user) {
       return res.json({ success: false, message: "User doesn't exist!" });
