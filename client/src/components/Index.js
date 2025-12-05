@@ -1,5 +1,7 @@
-import Signup from './signup/Signup.jsx';
-import Login from './login/Login.jsx';
+import Signup from './Auth/Signup.jsx';
+import Login from './Auth/Login.jsx';
+import Verify from './Auth/Verify.jsx';
 import Header from './header/Header.jsx';
 import Home from './home/Home.jsx';
-export {Signup,Login,Header,Home};
+
+export { Signup, Login, Verify, Header, Home };
