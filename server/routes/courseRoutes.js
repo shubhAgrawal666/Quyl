@@ -1,4 +1,4 @@
-// /api/courses/...
+
 import express from "express";
 import {
   createCourse,
@@ -26,12 +26,7 @@ router.put("/update/:slug", authMiddleware, isAdmin, updateCourse);
 router.delete("/delete/:slug", authMiddleware, isAdmin, deleteCourse);
 router.post("/:slug/lessons/add", authMiddleware, isAdmin, addLesson);
 router.put("/:slug/lessons/:lessonSlug", authMiddleware, isAdmin, updateLesson);
-router.delete(
-  "/:slug/lessons/:lessonSlug",
-  authMiddleware,
-  isAdmin,
-  deleteLesson
-);
+router.delete("/:slug/lessons/:lessonSlug",authMiddleware,isAdmin,deleteLesson);
 router.post("/enroll", authMiddleware, enrollCourse);
 router.post("/complete-lesson", authMiddleware, markLessonComplete);
 router.get("/progress/:slug", authMiddleware, getProgress);

@@ -466,7 +466,19 @@ export const getProgress = async (req, res) => {
       });
     }
 
-    const progress = await Progress.findOne({ userId, courseId: course._id });
+    const totalLessons = course.lessons.length;
+
+    if (totalLessons === 0) {
+      return res.status(200).json({
+        success: true,
+        completedLessons: [],
+        totalCompleted: 0,
+        completionPercentage: 0,
+        lastAccessedAt: null,
+      });
+    }
+
+    let progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
       return res.status(200).json({
@@ -478,7 +490,13 @@ export const getProgress = async (req, res) => {
       });
     }
 
+    if (!Array.isArray(progress.completedLessons)) {
+      progress.completedLessons = [];
+    }
+
     progress.lastAccessedAt = new Date();
+
+    progress.updateCompletionPercentage(totalLessons);
     await progress.save();
 
     res.status(200).json({
@@ -488,6 +506,7 @@ export const getProgress = async (req, res) => {
       completionPercentage: progress.completionPercentage,
       lastAccessedAt: progress.lastAccessedAt,
     });
+
   } catch (error) {
     console.error("Get progress error:", error);
     res.status(500).json({
@@ -497,37 +516,64 @@ export const getProgress = async (req, res) => {
   }
 };
 
+
+
 export const getEnrolledCourses = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "enrolledCourses",
-      select: "title description category thumbnail createdAt lessons",
-      populate: {
-        path: "createdBy",
-        select: "name",
-      },
+      select: "title slug description category thumbnail createdBy lessons createdAt",
+      populate: { path: "createdBy", select: "name" }
     });
 
     const coursesWithProgress = await Promise.all(
       user.enrolledCourses.map(async (course) => {
-        const progress = await Progress.findOne({
+        const totalLessons = course.lessons.length;
+
+        let progress = await Progress.findOne({
           userId: req.user._id,
-          courseId: course._id,
+          courseId: course._id
         });
 
-        if (progress && course.lessons.length > 0) {
-          progress.updateCompletionPercentage(course.lessons.length);
-          await progress.save();
+        if (totalLessons === 0) {
+          return {
+            ...course.toObject(),
+            progress: {
+              completedLessons: [],
+              totalCompleted: 0,
+              completionPercentage: 0,
+              lastAccessedAt: null
+            }
+          };
         }
+
+        if (!progress) {
+          return {
+            ...course.toObject(),
+            progress: {
+              completedLessons: [],
+              totalCompleted: 0,
+              completionPercentage: 0,
+              lastAccessedAt: null
+            }
+          };
+        }
+
+        if (!Array.isArray(progress.completedLessons)) {
+          progress.completedLessons = [];
+        }
+
+        progress.updateCompletionPercentage(totalLessons);
+        await progress.save();
 
         return {
           ...course.toObject(),
           progress: {
-            completedLessons: progress?.completedLessons || [],
-            totalCompleted: progress?.completedLessons.length || 0,
-            completionPercentage: progress?.completionPercentage || 0,
-            lastAccessedAt: progress?.lastAccessedAt || null,
-          },
+            completedLessons: progress.completedLessons,
+            totalCompleted: progress.completedLessons.length,
+            completionPercentage: progress.completionPercentage,
+            lastAccessedAt: progress.lastAccessedAt
+          }
         };
       })
     );
@@ -535,8 +581,9 @@ export const getEnrolledCourses = async (req, res) => {
     res.status(200).json({
       success: true,
       count: coursesWithProgress.length,
-      courses: coursesWithProgress,
+      courses: coursesWithProgress
     });
+
   } catch (error) {
     console.error("Get enrolled courses error:", error);
     res.status(500).json({
@@ -545,3 +592,5 @@ export const getEnrolledCourses = async (req, res) => {
     });
   }
 };
+
+
