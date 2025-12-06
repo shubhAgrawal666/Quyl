@@ -6,7 +6,7 @@ import generateToken from "../utils/generateToken.js";
 import "dotenv/config";
 
 export const register = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, adminKey } = req.body;
 
   if (!name || !email || !password) {
     return res.json({ success: false, message: "Missing Details" });
@@ -27,6 +27,9 @@ export const register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    const role =
+      adminKey === process.env.ADMIN_SECRET_KEY ? "admin" : "student";
+
     const otp = String(Math.floor(Math.random() * 900000 + 100000));
     const otpExpires = Date.now() + 10 * 60 * 1000;
 
@@ -37,6 +40,7 @@ export const register = async (req, res) => {
       otp,
       otpExpires,
       isVerified: false,
+      role,
     });
 
     await user.save();
