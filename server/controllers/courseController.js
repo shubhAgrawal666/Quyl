@@ -284,9 +284,15 @@ export const deleteLesson = async (req, res) => {
     await course.save();
 
     await Progress.updateMany(
-      { courseId: course._id, completedLessons: lessonIndex },
-      { $pull: { completedLessons: lessonIndex } }
+      { courseId: course._id },
+      { $pull: { completedLessons: { lessonSlug: lessonSlug } } }
     );
+
+    const progressRecords = await Progress.find({ courseId: course._id });
+    for (const progress of progressRecords) {
+      progress.updateCompletionPercentage(course.lessons.length);
+      await progress.save();
+    }
 
     res.status(200).json({
       success: true,
@@ -322,6 +328,18 @@ export const enrollCourse = async (req, res) => {
       });
     }
 
+    const existingProgress = await Progress.findOne({
+      userId,
+      courseId: course._id,
+    });
+
+    if (existingProgress) {
+      return res.status(400).json({
+        success: false,
+        message: "Progress record already exists",
+      });
+    }
+
     await User.findByIdAndUpdate(userId, {
       $addToSet: { enrolledCourses: course._id },
     });
@@ -334,6 +352,8 @@ export const enrollCourse = async (req, res) => {
       userId,
       courseId: course._id,
       completedLessons: [],
+      lastAccessedAt: new Date(),
+      completionPercentage: 0,
     });
 
     res.status(200).json({
@@ -376,25 +396,53 @@ export const markLessonComplete = async (req, res) => {
       });
     }
 
+    const lesson = course.lessons[lessonIndex];
+    if (!lesson) {
+      return res.status(404).json({
+        success: false,
+        message: "Lesson not found",
+      });
+    }
+
     let progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
       progress = await Progress.create({
         userId,
         courseId: course._id,
-        completedLessons: [lessonIndex],
+        completedLessons: [
+          {
+            lessonSlug: lesson.slug,
+            lessonIndex: lessonIndex,
+            completedAt: new Date(),
+          },
+        ],
+        lastAccessedAt: new Date(),
       });
     } else {
-      if (!progress.completedLessons.includes(lessonIndex)) {
-        progress.completedLessons.push(lessonIndex);
+      const alreadyCompleted = progress.completedLessons.some(
+        (cl) => cl.lessonSlug === lesson.slug
+      );
+
+      if (!alreadyCompleted) {
+        progress.completedLessons.push({
+          lessonSlug: lesson.slug,
+          lessonIndex: lessonIndex,
+          completedAt: new Date(),
+        });
+        progress.lastAccessedAt = new Date();
         await progress.save();
       }
     }
+
+    progress.updateCompletionPercentage(course.lessons.length);
+    await progress.save();
 
     res.status(200).json({
       success: true,
       message: "Lesson marked as complete",
       completedLessons: progress.completedLessons,
+      completionPercentage: progress.completionPercentage,
     });
   } catch (error) {
     console.error("Mark lesson complete error:", error);
@@ -418,21 +466,47 @@ export const getProgress = async (req, res) => {
       });
     }
 
-    const progress = await Progress.findOne({ userId, courseId: course._id });
+    const totalLessons = course.lessons.length;
+
+    if (totalLessons === 0) {
+      return res.status(200).json({
+        success: true,
+        completedLessons: [],
+        totalCompleted: 0,
+        completionPercentage: 0,
+        lastAccessedAt: null,
+      });
+    }
+
+    let progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
       return res.status(200).json({
         success: true,
         completedLessons: [],
         totalCompleted: 0,
+        completionPercentage: 0,
+        lastAccessedAt: null,
       });
     }
+
+    if (!Array.isArray(progress.completedLessons)) {
+      progress.completedLessons = [];
+    }
+
+    progress.lastAccessedAt = new Date();
+
+    progress.updateCompletionPercentage(totalLessons);
+    await progress.save();
 
     res.status(200).json({
       success: true,
       completedLessons: progress.completedLessons,
       totalCompleted: progress.completedLessons.length,
+      completionPercentage: progress.completionPercentage,
+      lastAccessedAt: progress.lastAccessedAt,
     });
+
   } catch (error) {
     console.error("Get progress error:", error);
     res.status(500).json({
@@ -442,30 +516,64 @@ export const getProgress = async (req, res) => {
   }
 };
 
+
+
 export const getEnrolledCourses = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
       path: "enrolledCourses",
-      select: "title description category thumbnail createdAt",
-      populate: {
-        path: "createdBy",
-        select: "name",
-      },
+      select: "title slug description category thumbnail createdBy lessons createdAt",
+      populate: { path: "createdBy", select: "name" }
     });
 
     const coursesWithProgress = await Promise.all(
       user.enrolledCourses.map(async (course) => {
-        const progress = await Progress.findOne({
+        const totalLessons = course.lessons.length;
+
+        let progress = await Progress.findOne({
           userId: req.user._id,
-          courseId: course._id,
+          courseId: course._id
         });
+
+        if (totalLessons === 0) {
+          return {
+            ...course.toObject(),
+            progress: {
+              completedLessons: [],
+              totalCompleted: 0,
+              completionPercentage: 0,
+              lastAccessedAt: null
+            }
+          };
+        }
+
+        if (!progress) {
+          return {
+            ...course.toObject(),
+            progress: {
+              completedLessons: [],
+              totalCompleted: 0,
+              completionPercentage: 0,
+              lastAccessedAt: null
+            }
+          };
+        }
+
+        if (!Array.isArray(progress.completedLessons)) {
+          progress.completedLessons = [];
+        }
+
+        progress.updateCompletionPercentage(totalLessons);
+        await progress.save();
 
         return {
           ...course.toObject(),
           progress: {
-            completedLessons: progress?.completedLessons || [],
-            totalCompleted: progress?.completedLessons.length || 0,
-          },
+            completedLessons: progress.completedLessons,
+            totalCompleted: progress.completedLessons.length,
+            completionPercentage: progress.completionPercentage,
+            lastAccessedAt: progress.lastAccessedAt
+          }
         };
       })
     );
@@ -473,8 +581,9 @@ export const getEnrolledCourses = async (req, res) => {
     res.status(200).json({
       success: true,
       count: coursesWithProgress.length,
-      courses: coursesWithProgress,
+      courses: coursesWithProgress
     });
+
   } catch (error) {
     console.error("Get enrolled courses error:", error);
     res.status(500).json({
@@ -483,3 +592,5 @@ export const getEnrolledCourses = async (req, res) => {
     });
   }
 };
+
+

@@ -1,4 +1,3 @@
-// course+lessons
 import mongoose from "mongoose";
 import slugify from "slugify";
 const lessonSchema = new mongoose.Schema(
@@ -155,6 +154,7 @@ courseSchema.statics.generateSlug = async function (title, excludeId = null) {
 courseSchema.index({ title: "text", description: "text" });
 courseSchema.index({ category: 1 });
 courseSchema.index({ createdAt: -1 });
+courseSchema.index({ studentsEnrolled: 1 });
 
 const Course = mongoose.models.Course || mongoose.model("Course", courseSchema);
 
