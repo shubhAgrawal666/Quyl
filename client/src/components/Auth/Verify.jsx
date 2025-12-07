@@ -34,7 +34,6 @@ export default function Verify() {
         return;
       }
 
-      // Success
       navigate("/login");
 
     } catch (err) {
@@ -74,7 +73,6 @@ console.log("UserID from URL:", userId);
             Verify Email
           </h1>
 
-          {/* ERROR MESSAGE */}
           {error && (
             <p className="text-red-600 text-center font-semibold mb-2">
               {error}
@@ -111,7 +109,6 @@ console.log("UserID from URL:", userId);
             </button>
           </form>
 
-          {/* RESEND OTP BUTTON */}
           <button
             onClick={handleResend}
             className="w-full mt-3 bg-gray-200 text-gray-800 p-2 rounded-lg font-semibold tracking-wider hover:bg-gray-300 transition-all shadow-md"

@@ -516,8 +516,6 @@ export const getProgress = async (req, res) => {
   }
 };
 
-
-
 export const getEnrolledCourses = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate({
@@ -592,5 +590,3 @@ export const getEnrolledCourses = async (req, res) => {
     });
   }
 };
-
-

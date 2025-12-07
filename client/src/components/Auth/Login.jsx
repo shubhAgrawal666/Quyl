@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { loginUser } from "../../api/auth"; // adjust the path if needed
+import { loginUser } from "../../api/auth"; 
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { checkAuth } = useAuth();   
 
-  // state
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [err, setErr] = useState("");
@@ -24,21 +25,21 @@ export default function Login() {
 
     try {
       const response = await loginUser({ email, password });
+      const data = response.data;
 
-      // If login failed
-      if (!response.data.success) {
-        // If email is not verified → redirect to verify
-        if (response.data.needsVerification) {
-          return navigate(`/verify?userId=${response.data.userId}`);
+      if (!data.success) {
+        if (data.needsVerification) {
+          return navigate(`/verify?userId=${data.userId}`);
         }
 
-        setErr(response.data.message);
+        setErr(data.message);
         setLoading(false);
         return;
       }
 
-      // SUCCESS → token saved in cookie automatically
-      navigate("/"); // redirect to homepage
+      
+      await checkAuth();     
+      navigate("/");          
 
     } catch (error) {
       console.log(error);
@@ -55,8 +56,6 @@ export default function Login() {
           <h1 className="text-3xl font-bold text-center mb-4 text-gray-800 tracking-wide">
             Welcome Back
           </h1>
-
-          {/* Error message */}
           {err && (
             <p className="text-red-600 text-center font-semibold mb-2">
               {err}

@@ -38,7 +38,6 @@ export default function Signup() {
         return;
       }
 
-      // Signup successful → go to verify page
       const userId = response.data.userId;
       navigate(`/verify?userId=${userId}`);
 
@@ -58,7 +57,6 @@ export default function Signup() {
             Create Account
           </h1>
 
-          {/* ERROR MESSAGE */}
           {error && (
             <p className="text-red-600 text-center font-semibold mb-2">
               {error}
