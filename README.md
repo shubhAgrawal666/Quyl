@@ -1,4 +1,4 @@
 # Quyl
-## Frontend-20%
+## Frontend-80%
 ## Backend-95%
 
