@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 import Course from "../models/courseModel.js";
 import User from "../models/userModel.js";
 import Progress from "../models/ProgressModel.js";
@@ -60,7 +61,6 @@ export const getCourses = async (req, res) => {
 
     const courses = await Course.find(filter)
       .populate("createdBy", "name email")
-      .select("-lessons")
       .sort({ createdAt: -1 });
 
     res.status(200).json({
@@ -81,27 +81,43 @@ export const getCourseBySlug = async (req, res) => {
   try {
     const { slug } = req.params;
 
-    const course = await Course.findOne({ slug })
-      .populate("createdBy", "name email")
-      .populate("studentsEnrolled", "name email");
-
+    const course = await Course.findOne({ slug }).lean(); 
     if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
+      return res.status(404).json({ success: false, message: "Course not found" });
     }
 
-    res.status(200).json({
+    let loggedInUserId = null;
+
+    const token = req.cookies?.token;
+    console.log("Token:", token);
+
+    if (token) {
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        loggedInUserId = String(decoded.id);
+      } catch (err) {
+      }
+    }
+
+    console.log("Logged-in user:", loggedInUserId);
+
+    
+    const enrolledIds = (course.studentsEnrolled || []).map(id => String(id));
+
+    console.log("Enrolled IDs (string):", enrolledIds);
+
+    const isEnrolled = enrolledIds.includes(loggedInUserId);
+
+
+    return res.json({
       success: true,
       course,
+      isEnrolled,
     });
+
   } catch (error) {
-    console.error("Get course by slug error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to fetch course",
-    });
+    console.error("getCourseBySlug error:", error);
+    return res.status(500).json({ success: false, message: "Server error" });
   }
 };
 
@@ -374,82 +390,64 @@ export const markLessonComplete = async (req, res) => {
     const { slug, lessonIndex } = req.body;
     const userId = req.user._id;
 
-    if (typeof lessonIndex !== "number" || lessonIndex < 0) {
-      return res.status(400).json({
-        success: false,
-        message: "Invalid lesson index",
-      });
-    }
-
     const course = await Course.findOne({ slug });
     if (!course) {
-      return res.status(404).json({
-        success: false,
-        message: "Course not found",
-      });
-    }
-
-    if (!req.user.enrolledCourses.includes(course._id)) {
-      return res.status(403).json({
-        success: false,
-        message: "You must be enrolled in this course",
-      });
+      return res.status(404).json({ success: false, message: "Course not found" });
     }
 
     const lesson = course.lessons[lessonIndex];
     if (!lesson) {
-      return res.status(404).json({
-        success: false,
-        message: "Lesson not found",
-      });
+      return res.status(404).json({ success: false, message: "Lesson not found" });
     }
 
     let progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
+      
       progress = await Progress.create({
         userId,
         courseId: course._id,
-        completedLessons: [
-          {
-            lessonSlug: lesson.slug,
-            lessonIndex: lessonIndex,
-            completedAt: new Date(),
-          },
-        ],
+        completedLessons: [],
         lastAccessedAt: new Date(),
+        completionPercentage: 0
       });
-    } else {
-      const alreadyCompleted = progress.completedLessons.some(
-        (cl) => cl.lessonSlug === lesson.slug
-      );
-
-      if (!alreadyCompleted) {
-        progress.completedLessons.push({
-          lessonSlug: lesson.slug,
-          lessonIndex: lessonIndex,
-          completedAt: new Date(),
-        });
-        progress.lastAccessedAt = new Date();
-        await progress.save();
-      }
     }
 
+    
+    const alreadyCompleted = progress.completedLessons.some(
+      (cl) => cl.lessonSlug === lesson.slug
+    );
+
+    if (alreadyCompleted) {
+      
+      progress.completedLessons = progress.completedLessons.filter(
+        (cl) => cl.lessonSlug !== lesson.slug
+      );
+    } else {
+      
+      progress.completedLessons.push({
+        lessonSlug: lesson.slug,
+        lessonIndex,
+        completedAt: new Date()
+      });
+    }
+
+    
     progress.updateCompletionPercentage(course.lessons.length);
+    progress.lastAccessedAt = new Date();
+
     await progress.save();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Lesson marked as complete",
+      message: alreadyCompleted ? "Lesson marked incomplete" : "Lesson marked complete",
       completedLessons: progress.completedLessons,
-      completionPercentage: progress.completionPercentage,
+      completionPercentage: progress.completionPercentage
     });
+
   } catch (error) {
-    console.error("Mark lesson complete error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Failed to mark lesson as complete",
-    });
+    console.error("Toggle lesson error:", error);
+    return res.status(500).json({ success: false, message: "Failed to update lesson status" });
   }
 };
 

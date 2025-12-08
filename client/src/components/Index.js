@@ -1,7 +1,10 @@
 import Signup from './Auth/Signup.jsx';
 import Login from './Auth/Login.jsx';
 import Verify from './Auth/Verify.jsx';
+import Profile from "./Auth/Profile.jsx";
 import Header from './header/Header.jsx';
 import Home from './home/Home.jsx';
-
-export { Signup, Login, Verify, Header, Home };
+import MyCourses from './myCourses/MyCourses.jsx';
+import AllCourses from './courses/AllCourses.jsx';
+import CourseDetails from './courses/CourseDetails.jsx';
+export { Signup, Login, Verify, Profile, Header, Home, MyCourses, AllCourses, CourseDetails};

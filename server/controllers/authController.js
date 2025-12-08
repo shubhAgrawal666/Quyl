@@ -1,4 +1,3 @@
-//signup,login
 import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
@@ -222,7 +221,21 @@ export const logout = async (req, res) => {
 
 export const isAuthenticated = async (req, res) => {
   try {
-    return res.json({ success: true });
+    const user = await User.findById(req.user._id).select("name email role");
+
+    if (!user) {
+      return res.json({ success: false });
+    }
+
+    return res.json({
+      success: true,
+      user: {
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }

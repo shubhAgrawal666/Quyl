@@ -8,7 +8,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
-  const [userRole, setUserRole] = useState(null);
+  const [user, setUser] = useState(null);
 
   const checkAuth = async () => {
     try {
@@ -16,15 +16,15 @@ export const AuthProvider = ({ children }) => {
 
       if (res.data.success) {
         setIsAuthenticated(true);
-        setUserRole("student"); 
+        setUser(res.data.user);
       } else {
         setIsAuthenticated(false);
-        setUserRole(null);
+        setUser(null);
       }
     } catch (error) {
       console.log(error);
       setIsAuthenticated(false);
-      setUserRole(null);
+      setUser(null);
     } finally {
       setLoading(false);
     }
@@ -33,12 +33,11 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAuth();
   }, []);
-
   const logout = async () => {
     try {
       await axios.post("http://localhost:4000/api/auth/logout");
       setIsAuthenticated(false);
-      setUserRole(null);
+      setUser(null);
     } catch (error) {
       console.log("Logout error:", error);
     }
@@ -48,7 +47,7 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         isAuthenticated,
-        userRole,
+        user,
         loading,
         logout,
         checkAuth,
