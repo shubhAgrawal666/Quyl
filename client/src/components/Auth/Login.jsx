@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { loginUser } from "../../api/auth"; 
+import { loginUser } from "../../api/auth";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { checkAuth } = useAuth();   
+  const { checkAuth } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -16,13 +16,7 @@ export default function Login() {
     e.preventDefault();
     setErr("");
 
-    if (!email || !password) {
-      setErr("All fields are required");
-      return;
-    }
-
     setLoading(true);
-
     try {
       const response = await loginUser({ email, password });
       const data = response.data;
@@ -31,18 +25,13 @@ export default function Login() {
         if (data.needsVerification) {
           return navigate(`/verify?userId=${data.userId}`);
         }
-
         setErr(data.message);
-        setLoading(false);
         return;
       }
 
-      
-      await checkAuth();     
-      navigate("/");          
-
-    } catch (error) {
-      console.log(error);
+      await checkAuth();  
+      navigate("/");
+    } catch {
       setErr("Something went wrong.");
     } finally {
       setLoading(false);
@@ -50,55 +39,43 @@ export default function Login() {
   };
 
   return (
-    <>
-      <div className="h-screen w-screen flex justify-center items-center bg-cover">
-        <div className="rounded-2xl shadow-xl bg-white border border-gray-300 h-[380px] w-[420px] p-6">
-          <h1 className="text-3xl font-bold text-center mb-4 text-gray-800 tracking-wide">
-            Welcome Back
-          </h1>
-          {err && (
-            <p className="text-red-600 text-center font-semibold mb-2">
-              {err}
-            </p>
-          )}
+    <div className="h-screen w-screen flex justify-center items-center bg-cover">
+      <div className="rounded-2xl shadow-xl bg-white border border-gray-300 h-[380px] w-[420px] p-6">
+        <h1 className="text-3xl font-bold text-center mb-4 text-gray-800">
+          Welcome Back
+        </h1>
 
-          <form className="font-sans tracking-wide space-y-4" onSubmit={handleLogin}>
+        {err && <p className="text-red-600 text-center mb-2">{err}</p>}
 
-            <div>
-              <label className="font-semibold text-gray-700">Enter Email</label>
-              <input
-                type="email"
-                placeholder="Email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 rounded-lg border border-gray-400 w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-              />
-            </div>
+        <form className="space-y-4" onSubmit={handleLogin}>
+          <div>
+            <label className="font-semibold text-gray-700">Email</label>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="mt-1 rounded-lg border w-full p-2"
+            />
+          </div>
 
-            <div>
-              <label className="font-semibold text-gray-700">Enter Password</label>
-              <input
-                type="password"
-                placeholder="Password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="mt-1 rounded-lg border border-gray-400 w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
-              />
-            </div>
+          <div>
+            <label className="font-semibold text-gray-700">Password</label>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="mt-1 rounded-lg border w-full p-2"
+            />
+          </div>
 
-            <button
-              type="submit"
-              className="w-full mt-3 bg-blue-600 text-white p-2 rounded-lg font-semibold tracking-wider hover:bg-blue-700 transition-all shadow-md"
-              disabled={loading}
-            >
-              {loading ? "Logging in..." : "Login"}
-            </button>
-
-          </form>
-        </div>
+          <button
+            type="submit"
+            className="w-full mt-3 bg-blue-600 text-white p-2 rounded-lg"
+          >
+            {loading ? "Logging in..." : "Login"}
+          </button>
+        </form>
       </div>
-    </>
+    </div>
   );
 }

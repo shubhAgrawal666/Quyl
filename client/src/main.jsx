@@ -16,9 +16,9 @@ const router = createBrowserRouter(
       <Route path='signup' element={<Signup/>} />
       <Route path='verify' element={<Verify />} />
       <Route path="my-courses" element={<MyCourses />} />
-      <Route path="courses" element={<AllCourses/>} />
       <Route path="profile" element={<Profile/>} />
-      <Route path="/courses/:courseId" element={<CourseDetails/>}/>
+      <Route path="/courses/:slug" element={<CourseDetails/>}/>
+      <Route path="courses" element={<AllCourses/>} />
     </Route>
   )
 );

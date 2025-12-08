@@ -4,8 +4,12 @@ import Category from './category/Category.jsx';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faChartBar, faPlay, faBook, faDatabase, faBrain, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { useAuth } from "../../context/AuthContext";   
 
 export default function Home() {
+
+  const { isAuthenticated } = useAuth();  
+
   return (
     <>
       <div className="w-full min-h-screen bg-gradient-to-b from-orange-50 via-white to-orange-100 flex flex-col items-center px-4 py-12">
@@ -75,34 +79,37 @@ export default function Home() {
           </div>
         </section>
 
-        {/* FINAL CTA SECTION */}
-        <section className="w-full max-w-4xl mt-24">
-          <div className="rounded-3xl bg-gradient-to-r from-orange-500 to-red-500 px-6 sm:px-10 py-10 sm:py-12 text-center text-white shadow-2xl">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
-              Ready to Start Your Learning Journey?
-            </h2>
-            <p className="mt-4 text-sm sm:text-base md:text-lg text-orange-100 max-w-2xl mx-auto">
-              Join thousands of learners leveling up their skills with structured, project-driven courses.
-            </p>
+        {/* FINAL CTA SECTION — HIDDEN IF LOGGED IN */}
+        {!isAuthenticated && (
+          <section className="w-full max-w-4xl mt-24">
+            <div className="rounded-3xl bg-gradient-to-r from-orange-500 to-red-500 px-6 sm:px-10 py-10 sm:py-12 text-center text-white shadow-2xl">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold">
+                Ready to Start Your Learning Journey?
+              </h2>
+              <p className="mt-4 text-sm sm:text-base md:text-lg text-orange-100 max-w-2xl mx-auto">
+                Join thousands of learners leveling up their skills with structured, project-driven courses.
+              </p>
 
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link
-                to="/signup"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white text-orange-600 text-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transform transition"
-              >
-                <FontAwesomeIcon icon={faArrowRight} />
-                Create Free Account
-              </Link>
+              <div className="mt-8 flex flex-wrap justify-center gap-4">
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full bg-white text-orange-600 text-lg font-semibold shadow-md hover:shadow-lg hover:-translate-y-0.5 transform transition"
+                >
+                  <FontAwesomeIcon icon={faArrowRight} />
+                  Create Free Account
+                </Link>
 
-              <Link
-                to="#"
-                className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-orange-100 text-white text-lg font-medium bg-white/10 backdrop-blur-sm hover:bg-white/20 transition"
-              >
-                Browse Courses
-              </Link>
+                <Link
+                  to="#"
+                  className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-orange-100 text-white text-lg font-medium bg-white/10 backdrop-blur-sm hover:bg-white/20 transition"
+                >
+                  Browse Courses
+                </Link>
+              </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
+
       </div>
     </>
   );

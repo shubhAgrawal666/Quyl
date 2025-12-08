@@ -1,4 +1,3 @@
-
 import axios from "axios";
 
 const API = axios.create({
@@ -6,12 +5,15 @@ const API = axios.create({
   withCredentials: true, 
 });
 
-export const enrollCourse = async (courseId) => {
-  return axios.post(
-    `${import.meta.env.VITE_BACKEND_URL}/api/course/enroll`,
-    { courseId },
-    { withCredentials: true }
-  );
-};
-
+export const enrollCourse =(slug) => API.post("/courses/enroll",{slug});
+export const getAllCourses = () => API.get("/courses");
 export const getEnrolledCourses = () => API.get("/courses/my/enrolled");
+export const getCourseBySlug = (slug) =>
+  API.get(`/courses/${slug}`);
+
+export const getProgress = (slug) =>
+  API.get(`/courses/progress/${slug}`);
+
+export const markLessonComplete = (slug, lessonIndex) => {
+  return API.post(`/courses/toggleLesson`, {slug, lessonIndex });
+};

@@ -99,7 +99,7 @@ export default function MyCourses() {
 
                 <button
                   className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold tracking-wide text-sm hover:bg-blue-700 transition-colors"
-                  onClick={() => {navigate(`/courses/${course._id}`)}}
+                  onClick={() => {navigate(`/courses/${course.slug}`)}}
                 >
                   Continue Learning
                 </button>
