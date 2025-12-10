@@ -8,42 +8,66 @@ import "dotenv/config";
 
 export const getAllUsers = async (req, res) => {
   try {
-    const { role, search, page = 1, limit = 20 } = req.query;
+    const users = await User.find()
+      .select("name email role createdAt isVerified")
+      .lean();
 
-    const filter = {};
-    if (role && ["student", "admin"].includes(role)) {
-      filter.role = role;
-    }
-    if (search) {
-      filter.$or = [
-        { name: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
-    }
+    const progresses = await Progress.find().lean();
 
-    const skip = (page - 1) * limit;
+    const courses = await Course.find().select("title lessons").lean();
 
-    const users = await User.find(filter)
-      .select("-password -otp -otpExpires -resetOtp -resetOtpExpires")
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(parseInt(limit));
-
-    const totalUsers = await User.countDocuments(filter);
-
-    res.status(200).json({
-      success: true,
-      count: users.length,
-      totalUsers,
-      totalPages: Math.ceil(totalUsers / limit),
-      currentPage: parseInt(page),
-      users,
+    const courseMap = {};
+    courses.forEach(c => {
+      courseMap[c._id] = { title: c.title, totalLessons: c.lessons.length };
     });
-  } catch (error) {
-    console.error("Get all users error:", error);
+
+    const progressByUser = {};
+    progresses.forEach(p => {
+      if (!progressByUser[p.userId]) {
+        progressByUser[p.userId] = [];
+      }
+      progressByUser[p.userId].push(p);
+    });
+
+    const enrichedUsers = users.map(user => {
+      const userProgress = progressByUser[user._id] || [];
+
+      const enrolledCourses = userProgress.map(p => {
+        const courseInfo = courseMap[p.courseId] || { title: "Unknown Course", totalLessons: 0 };
+
+        const total = courseInfo.totalLessons;
+        const done = p.completedLessons.length;
+
+        const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+
+        return {
+          courseId: p.courseId,
+          courseTitle: courseInfo.title,
+          progress: progressPercent
+        };
+      });
+
+      return {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        registeredAt: user.createdAt,
+        isVerified: user.isVerified,
+        enrolledCourses
+      };
+    });
+    
+    return res.json({
+      success: true,
+      users:enrichedUsers
+    });
+
+  } catch (err) {
+    console.error("ADMIN GET USERS ERROR:", err);
     res.status(500).json({
       success: false,
-      message: "Failed to fetch users",
+      message: "Failed to load users"
     });
   }
 };
@@ -198,9 +222,14 @@ export const getDashboardStats = async (req, res) => {
     const totalAdmins = await User.countDocuments({ role: "admin" });
     const totalCourses = await Course.countDocuments();
     const verifiedUsers = await User.countDocuments({ isVerified: true });
-
     const sevenDaysAgo = new Date();
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+    const allUsers = await User.find({}, "enrolledCourses");
+    const totalEnrollments = allUsers.reduce(
+      (sum, u) => sum + (u.enrolledCourses?.length || 0),
+      0
+    );
 
     const recentEnrollments = await Progress.countDocuments({
       createdAt: { $gte: sevenDaysAgo },
@@ -213,14 +242,13 @@ export const getDashboardStats = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      stats: {
-        totalUsers,
-        totalStudents,
-        totalAdmins,
-        totalCourses,
-        verifiedUsers,
-        recentEnrollments,
-      },
+      totalUsers,
+      totalStudents,
+      totalAdmins,
+      totalCourses,
+      totalEnrollments,
+      verifiedUsers,
+      recentEnrollments,
       popularCourses,
     });
   } catch (error) {
