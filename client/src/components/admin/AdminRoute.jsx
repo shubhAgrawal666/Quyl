@@ -1,19 +1,25 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 
-/*
-  Simple front-end protector for preview:
-  Checks localStorage.user.role === "admin".
-  Real security must be done on the server.
-*/
 export default function AdminRoute({ children }) {
-  try {
-    const stored = localStorage.getItem("user");
-    if (!stored) return <Navigate to="/login" replace />;
-    const user = JSON.parse(stored);
-    if (user.role !== "admin") return <Navigate to="/login" replace />;
-    return children;
-  } catch {
+  const { user, loading } = useAuth();
+
+  
+  if (loading) {
+    return <p className="text-center mt-10">Checking admin access...</p>;
+  }
+
+  
+  if (!user) {
     return <Navigate to="/login" replace />;
   }
+
+  
+  if (user.role !== "admin") {
+    return <Navigate to="/" replace />;
+  }
+
+  
+  return children;
 }

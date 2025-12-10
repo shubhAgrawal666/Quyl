@@ -1,4 +1,4 @@
-// src/api/admin.js
+
 import axios from "axios";
 
 const API = axios.create({
@@ -6,14 +6,48 @@ const API = axios.create({
   withCredentials: true,
 });
 
-// Courses
-export const createCourse = (payload) => API.post("/admin/course", payload);
-export const updateCourse = (courseId, payload) => API.put(`/admin/course/${courseId}`, payload);
-export const deleteCourse = (courseId) => API.delete(`/admin/course/${courseId}`);
-export const getAdminCourses = () => API.get("/admin/courses");
+export const getDashboardStats = () =>
+  API.get("/admin/dashboard-stats");
 
-// Lessons
-export const addLesson = (courseId, payload) =>
-  API.post(`/admin/course/${courseId}/lesson`, payload);
-export const deleteLesson = (courseId, lessonId) =>
-  API.delete(`/admin/course/${courseId}/lesson/${lessonId}`);
+
+export const getAllUsers = () =>
+  API.get("/admin/users");
+
+export const getUserById = (id) =>
+  API.get(`/admin/user/${id}`);
+
+export const updateUserRole = (payload) =>
+  API.put("/admin/update-role", payload);
+
+export const toggleUserVerification = (payload) =>
+  API.put("/admin/toggle-verification", payload);
+
+export const deleteUser = (id) =>
+  API.delete(`/admin/delete-user/${id}`);
+
+export const createCourse = (payload) =>
+  API.post("/courses/create", payload);
+
+
+export const updateCourse = (slug, payload) =>
+  API.put(`/courses/update/${slug}`, payload);
+
+
+export const deleteCourse = (slug) =>
+  API.delete(`/courses/delete/${slug}`);
+
+
+export const getAdminCourses = () =>
+  API.get("/courses");
+
+
+export const addLesson = (slug, payload) =>
+  API.post(`/courses/${slug}/lessons/add`, payload);
+
+
+export const updateLesson = (slug, lessonSlug, payload) =>
+  API.put(`/courses/${slug}/lessons/${lessonSlug}`, payload);
+
+
+export const deleteLesson = (slug, lessonSlug) =>
+  API.delete(`/courses/${slug}/lessons/${lessonSlug}`);
