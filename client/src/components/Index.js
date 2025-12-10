@@ -1,10 +1,45 @@
-import Signup from './Auth/Signup.jsx';
-import Login from './Auth/Login.jsx';
-import Verify from './Auth/Verify.jsx';
+// src/components/Index.js
+
+// AUTH
+import Signup from "./Auth/Signup.jsx";
+import Login from "./Auth/Login.jsx";
+import Verify from "./Auth/Verify.jsx";
 import Profile from "./Auth/Profile.jsx";
-import Header from './header/Header.jsx';
-import Home from './home/Home.jsx';
-import MyCourses from './myCourses/MyCourses.jsx';
-import AllCourses from './courses/AllCourses.jsx';
-import CourseDetails from './courses/CourseDetails.jsx';
-export { Signup, Login, Verify, Profile, Header, Home, MyCourses, AllCourses, CourseDetails};
+
+// USER SIDE COMPONENTS
+import Header from "./header/Header.jsx";
+import Home from "./home/Home.jsx";
+import MyCourses from "./myCourses/MyCourses.jsx";
+import AllCourses from "./courses/AllCourses.jsx";
+import CourseDetails from "./courses/CourseDetails.jsx";
+
+// ADMIN COMPONENTS
+import AdminLayout from "./admin/AdminLayout.jsx";
+import AdminRoute from "./admin/AdminRoute.jsx";
+import AdminDashboard from "./admin/AdminDashboard.jsx";
+import CoursesList from "./admin/CoursesList.jsx";
+import CreateCourse from "./admin/CreateCourse.jsx";
+import EditCourse from "./admin/EditCourse.jsx";
+import ManageUsers from "./admin/ManageUsers.jsx";
+
+// EXPORT ALL COMPONENTS
+export {
+  Signup,
+  Login,
+  Verify,
+  Profile,
+  Header,
+  Home,
+  MyCourses,
+  AllCourses,
+  CourseDetails,
+
+  // ADMIN
+  AdminLayout,
+  AdminRoute,
+  AdminDashboard,
+  CoursesList,
+  CreateCourse,
+  EditCourse,
+  ManageUsers
+};
