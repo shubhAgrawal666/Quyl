@@ -17,10 +17,6 @@ export default function EditCourse() {
   const [loading, setLoading] = useState(true);
 
   
-  
-  
-  
-
   useEffect(() => {
     async function loadCourse() {
       try {
@@ -87,7 +83,7 @@ export default function EditCourse() {
         })),
       };
 
-      const res = await updateCourse(course._id, payload);
+      const res = await updateCourse(course.slug, payload);
 
       if (res?.data?.success) {
         alert("Course updated successfully!");
