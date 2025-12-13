@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { enrollCourse, getAllCourses, getEnrolledCourses } from "../../api/courses.js";
+import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function AllCourses() {
   const navigate = useNavigate();
+
+  const { isAuthenticated } = useAuth();
 
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,10 +14,12 @@ export default function AllCourses() {
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
 
-  const [enrolledSlugs, setEnrolledSlugs] = useState(new Set()); 
+  const [enrolledSlugs, setEnrolledSlugs] = useState(new Set());
+
 
   
    useEffect(() => {
+  useEffect(() => {
     async function loadData() {
       try {
         const allRes = await getAllCourses();
@@ -24,6 +29,12 @@ export default function AllCourses() {
         if (enrolledRes.data.success) {
           const slugs = enrolledRes.data.courses.map((c) => c.slug);
           setEnrolledSlugs(new Set(slugs));
+        if (isAuthenticated) {
+          const enrolledRes = await getEnrolledCourses();
+          if (enrolledRes.data.success) {
+            const slugs = enrolledRes.data.courses.map((c) => c.slug);
+            setEnrolledSlugs(new Set(slugs));
+          }
         }
       } catch (err) {
         console.error(err);
@@ -34,7 +45,7 @@ export default function AllCourses() {
     }
 
     loadData();
-  }, []);
+  }, [isAuthenticated]);
 
   const categories = ["All", ...new Set(courses.map((c) => c.category))];
 
@@ -106,7 +117,7 @@ export default function AllCourses() {
         {/* Courses Grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-4">
           {filteredCourses.map((course) => {
-            const alreadyEnrolled = enrolledSlugs.has(course.slug); 
+            const alreadyEnrolled = enrolledSlugs.has(course.slug);
 
             return (
               <div
@@ -135,35 +146,43 @@ export default function AllCourses() {
                   </button>
 
                   {/* Enroll Button OR Already Enrolled */}
-                  {alreadyEnrolled ? (
-                    <div className="mt-2 w-full py-2 rounded-lg font-semibold text-center bg-gray-300 text-gray-700">
-                      Already Enrolled
-                    </div>
-                  ) : (
-                    <button
-                      className="mt-2 w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
-                      disabled={enrollingCourse === course.slug}
-                      onClick={async () => {
-                        setEnrollingCourse(course.slug);
-                        try {
-                          const res = await enrollCourse(course.slug);
-                          if (res.data.success) {
-                            alert("Course Enrolled Successfully");
-                            navigate(`/courses/${course.slug}`);
-                          } else {
-                            alert(res.data.message);
-                          }
-                        } catch {
-                          alert("Enrollment failed");
-                        } finally {
-                          setEnrollingCourse(null);
-                        }
-                      }}
-                    >
-                      {enrollingCourse === course.slug ? "Enrolling..." : "Enroll Now"}
-                    </button>
-                  )}
+                  {isAuthenticated ? (
+                    alreadyEnrolled ? (
 
+                      <div className="mt-2 w-full py-2 rounded-lg font-semibold text-center bg-gray-300 text-gray-700">
+                        Already Enrolled
+                      </div>
+                    ) : (
+                      <button
+                        className="mt-2 w-full bg-green-600 text-white py-2 rounded-lg font-semibold hover:bg-green-700 transition"
+                        disabled={enrollingCourse === course.slug}
+                        onClick={async () => {
+                          setEnrollingCourse(course.slug);
+                          try {
+                            const res = await enrollCourse(course.slug);
+                            if (res.data.success) {
+                              alert("Course Enrolled Successfully");
+                              navigate(`/courses/${course.slug}`);
+                            } else {
+                              alert(res.data.message);
+                            }
+                          } catch {
+                            alert("Enrollment failed");
+                          } finally {
+                            setEnrollingCourse(null);
+                          }
+                        }}
+                      >
+                        {enrollingCourse === course.slug ? "Enrolling..." : "Enroll Now"}
+                      </button>
+                    )
+                  ) : (<button
+                    className="mt-2 w-full border py-2 rounded-lg font-semibold text-gray-700 hover:bg-gray-100"
+                    onClick={() => navigate("/login")}
+                  >
+                    Login to Enroll
+                  </button>)
+                  }
                 </div>
               </div>
             );
