@@ -74,7 +74,7 @@ export default function Header() {
                 {!isAuthenticated && (
                   <li>
                     <NavLink
-                      to="/signup"
+                      to="/courses"
                       className={({ isActive }) =>
                         `text-lg block py-2 duration-200 ${
                           isActive ? "text-orange-700" : "text-gray-700"
