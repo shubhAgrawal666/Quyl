@@ -12,7 +12,7 @@ import Home from "./home/Home.jsx";
 import MyCourses from "./myCourses/MyCourses.jsx";
 import AllCourses from "./courses/AllCourses.jsx";
 import CourseDetails from "./courses/CourseDetails.jsx";
-import Footer from "./footer/Footer.jsx";
+
 // ADMIN COMPONENTS
 import AdminLayout from "./admin/AdminLayout.jsx";
 import AdminRoute from "./admin/AdminRoute.jsx";
@@ -29,7 +29,6 @@ export {
   Verify,
   Profile,
   Header,
-  Footer,
   Home,
   MyCourses,
   AllCourses,

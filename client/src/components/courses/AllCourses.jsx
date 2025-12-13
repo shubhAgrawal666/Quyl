@@ -17,18 +17,12 @@ export default function AllCourses() {
   const [enrolledSlugs, setEnrolledSlugs] = useState(new Set());
 
 
-  
-   useEffect(() => {
   useEffect(() => {
     async function loadData() {
       try {
         const allRes = await getAllCourses();
         if (allRes.data.success) setCourses(allRes.data.courses);
 
-        const enrolledRes = await getEnrolledCourses();
-        if (enrolledRes.data.success) {
-          const slugs = enrolledRes.data.courses.map((c) => c.slug);
-          setEnrolledSlugs(new Set(slugs));
         if (isAuthenticated) {
           const enrolledRes = await getEnrolledCourses();
           if (enrolledRes.data.success) {
