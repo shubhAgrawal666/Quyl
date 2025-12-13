@@ -100,7 +100,7 @@ export default function Home() {
                 </Link>
 
                 <Link
-                  to="#"
+                  to="/courses"
                   className="inline-flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-3.5 rounded-full border border-orange-100 text-white text-lg font-medium bg-white/10 backdrop-blur-sm hover:bg-white/20 transition"
                 >
                   Browse Courses
