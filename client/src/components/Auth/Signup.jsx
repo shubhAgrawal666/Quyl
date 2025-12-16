@@ -42,7 +42,7 @@ export default function Signup() {
       navigate(`/verify?userId=${userId}`);
 
     } catch (err) {
-      console.log(err);
+      err
       setError("Something went wrong.");
     } finally {
       setLoading(false);

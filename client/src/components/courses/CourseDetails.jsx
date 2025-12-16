@@ -209,7 +209,7 @@ export default function CourseDetails() {
                       : "bg-blue-600 text-white hover:bg-blue-700"
                   }`}
               >
-                {isCompleted ? "Mark as Incompleted" : "Mark as Completed"}
+                {isCompleted ? "Mark as Incomplete" : "Mark as Completed"}
               </button>
             )}
           </div>
@@ -249,7 +249,7 @@ export default function CourseDetails() {
                     </span>
 
                     {completed && (
-                      <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full">
+                      <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full flex items-center justify-center">
                         Done
                       </span>
                     )}

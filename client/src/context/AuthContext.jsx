@@ -12,7 +12,9 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/auth/is-auth");
+      const res = await axios.get("http://localhost:4000/api/auth/is-auth", {
+        withCredentials: true,
+      });
 
       if (res.data.success) {
         setIsAuthenticated(true);
@@ -22,7 +24,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
-      console.log(error);
+      error
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -35,11 +37,13 @@ export const AuthProvider = ({ children }) => {
   }, []);
   const logout = async () => {
     try {
-      await axios.post("http://localhost:4000/api/auth/logout");
+      await axios.post("http://localhost:4000/api/auth/logout", {
+        withCredentials: true,
+      });
       setIsAuthenticated(false);
       setUser(null);
     } catch (error) {
-      console.log("Logout error:", error);
+      error
     }
   };
 

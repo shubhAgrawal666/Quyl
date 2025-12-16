@@ -89,26 +89,15 @@ export const getCourseBySlug = async (req, res) => {
     let loggedInUserId = null;
 
     const token = req.cookies?.token;
-    console.log("Token:", token);
-
     if (token) {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         loggedInUserId = String(decoded.id);
       } catch (err) {
       }
-    }
-
-    console.log("Logged-in user:", loggedInUserId);
-
-    
+    }    
     const enrolledIds = (course.studentsEnrolled || []).map(id => String(id));
-
-    console.log("Enrolled IDs (string):", enrolledIds);
-
     const isEnrolled = enrolledIds.includes(loggedInUserId);
-
-
     return res.json({
       success: true,
       course,
@@ -123,7 +112,7 @@ export const getCourseBySlug = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   try {
-    const { title, description, category, thumbnail } = req.body;
+    const { title, description, category, thumbnail, lessons } = req.body;
     const { slug } = req.params;
 
     const course = await Course.findOne({ slug });
@@ -139,8 +128,11 @@ export const updateCourse = async (req, res) => {
     if (description) course.description = description;
     if (category) course.category = category;
     if (thumbnail) course.thumbnail = thumbnail;
+    if (Array.isArray(lessons)) {
+      course.lessons = lessons;
+    }
 
-    await course.save();
+    await course.save(); 
 
     res.status(200).json({
       success: true,
@@ -151,18 +143,21 @@ export const updateCourse = async (req, res) => {
     });
   } catch (error) {
     console.error("Update course error:", error);
+
     if (error.code === 11000 && error.keyPattern?.slug) {
       return res.status(409).json({
         success: false,
         message: "A course with this title already exists",
       });
     }
+
     res.status(500).json({
       success: false,
       message: "Failed to update course",
     });
   }
 };
+
 
 export const deleteCourse = async (req, res) => {
   try {

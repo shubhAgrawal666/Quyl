@@ -24,7 +24,6 @@ export default function Verify() {
     }
 
     setLoading(true);
-    console.log("Sending to backend:", { userId, otp });
     try {
       const response = await verifyEmail({ userId, otp });
 
@@ -37,7 +36,7 @@ export default function Verify() {
       navigate("/login");
 
     } catch (err) {
-      console.log(err);
+      err
       setError("Something went wrong.");
     } finally {
       setLoading(false);
@@ -55,16 +54,14 @@ export default function Verify() {
         setError(response.data.message);
         return;
       }
-      
-      setResendMessage("OTP sent again to your email!");
-      
-    } catch (err) {
-        console.log(err);
-        setError("Could not resend OTP.");
-    }
-};
 
-console.log("UserID from URL:", userId);
+      setResendMessage("OTP sent again to your email!");
+
+    } catch (err) {
+      err
+      setError("Could not resend OTP.");
+    }
+  };
   return (
     <>
       <div className="h-screen w-screen flex justify-center items-center bg-cover">
