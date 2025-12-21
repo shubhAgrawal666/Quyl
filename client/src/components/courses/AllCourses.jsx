@@ -1,11 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { enrollCourse, getAllCourses, getEnrolledCourses } from "../../api/courses.js";
+import {
+  enrollCourse,
+  getAllCourses,
+  getEnrolledCourses,
+} from "../../api/courses.js";
 import { useAuth } from "../../context/AuthContext.jsx";
 
 export default function AllCourses() {
   const navigate = useNavigate();
-
   const { isAuthenticated } = useAuth();
 
   const [courses, setCourses] = useState([]);
@@ -13,9 +16,7 @@ export default function AllCourses() {
   const [enrollingCourse, setEnrollingCourse] = useState(null);
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
-
   const [enrolledSlugs, setEnrolledSlugs] = useState(new Set());
-
 
   useEffect(() => {
     async function loadData() {
@@ -37,7 +38,6 @@ export default function AllCourses() {
         setLoading(false);
       }
     }
-
     loadData();
   }, [isAuthenticated]);
 
@@ -63,53 +63,59 @@ export default function AllCourses() {
   }
 
   return (
-    <div className="min-h-screen w-screen bg-gray-50 flex justify-center">
-      <div className="w-full max-w-6xl px-4 py-8">
+    <div className="min-h-screen w-full bg-gray-50 flex justify-center">
+      <div className="w-full max-w-6xl px-4 sm:px-6 py-8">
 
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
           <div>
-            <h1 className="text-3xl font-bold text-gray-800 tracking-wide">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 tracking-wide">
               All Courses
             </h1>
-            <p className="text-gray-600 mt-1">
+            <p className="text-gray-600 mt-1 text-sm sm:text-base">
               Browse all available courses and start learning.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3">
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             <input
               type="text"
               placeholder="Search courses..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
+              className="w-full sm:w-[220px] rounded-lg border border-gray-300 px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500"
             />
 
             <select
               value={selectedCategory}
               onChange={(e) => setSelectedCategory(e.target.value)}
-              className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+              className="w-full sm:w-[180px] rounded-lg border border-gray-300 px-3 py-2 text-sm"
             >
               {categories.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
+                <option key={cat} value={cat}>
+                  {cat}
+                </option>
               ))}
             </select>
           </div>
         </div>
 
-        {/* Empty */}
+        {/* Empty State */}
         {filteredCourses.length === 0 && (
           <div className="mt-12 flex justify-center">
             <div className="bg-white border border-gray-200 rounded-2xl shadow-sm px-8 py-6 text-center max-w-md">
-              <h2 className="text-xl font-semibold text-gray-800 mb-2">No courses found</h2>
-              <p className="text-gray-600 text-sm">Try searching something else.</p>
+              <h2 className="text-xl font-semibold text-gray-800 mb-2">
+                No courses found
+              </h2>
+              <p className="text-gray-600 text-sm">
+                Try searching something else.
+              </p>
             </div>
           </div>
         )}
 
         {/* Courses Grid */}
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-4">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mt-4">
           {filteredCourses.map((course) => {
             const alreadyEnrolled = enrolledSlugs.has(course.slug);
 
@@ -119,19 +125,29 @@ export default function AllCourses() {
                 className="bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden hover:shadow-lg transition-shadow"
               >
                 <div className="h-40 w-full overflow-hidden">
-                  <img src={course.thumbnail} className="h-full w-full object-cover" />
+                  <img
+                    src={course.thumbnail}
+                    alt={course.title}
+                    className="h-full w-full object-cover"
+                  />
                 </div>
 
                 <div className="p-4 flex flex-col gap-2">
-                  <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">{course.title}</h2>
-                  <p className="text-sm text-gray-600 line-clamp-3">{course.description}</p>
+                  <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
+                    {course.title}
+                  </h2>
+
+                  <p className="text-sm text-gray-600 line-clamp-3">
+                    {course.description}
+                  </p>
 
                   <div className="flex justify-between items-center text-xs mt-3 text-gray-500">
-                    <span className="px-2 py-1 bg-gray-100 rounded-full font-medium">{course.category}</span>
+                    <span className="px-2 py-1 bg-gray-100 rounded-full font-medium">
+                      {course.category}
+                    </span>
                     <span>{course.lessons?.length || 0} lessons</span>
                   </div>
 
-                  {/* View Button */}
                   <button
                     className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
                     onClick={() => navigate(`/courses/${course.slug}`)}
@@ -139,10 +155,8 @@ export default function AllCourses() {
                     View Course
                   </button>
 
-                  {/* Enroll Button OR Already Enrolled */}
                   {isAuthenticated ? (
                     alreadyEnrolled ? (
-
                       <div className="mt-2 w-full py-2 rounded-lg font-semibold text-center bg-gray-300 text-gray-700">
                         Already Enrolled
                       </div>
@@ -167,22 +181,24 @@ export default function AllCourses() {
                           }
                         }}
                       >
-                        {enrollingCourse === course.slug ? "Enrolling..." : "Enroll Now"}
+                        {enrollingCourse === course.slug
+                          ? "Enrolling..."
+                          : "Enroll Now"}
                       </button>
                     )
-                  ) : (<button
-                    className="mt-2 w-full border py-2 rounded-lg font-semibold text-gray-700 hover:bg-gray-100"
-                    onClick={() => navigate("/login")}
-                  >
-                    Login to Enroll
-                  </button>)
-                  }
+                  ) : (
+                    <button
+                      className="mt-2 w-full border py-2 rounded-lg font-semibold text-gray-700 hover:bg-gray-100"
+                      onClick={() => navigate("/login")}
+                    >
+                      Login to Enroll
+                    </button>
+                  )}
                 </div>
               </div>
             );
           })}
         </div>
-
       </div>
     </div>
   );

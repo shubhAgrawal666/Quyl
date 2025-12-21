@@ -4,9 +4,9 @@ import {Header,Footer} from './Index.js';
 export default function Layout(){
     return(
         <>
-            <Header/>
-            <Outlet/>
-            <Footer/>
+            <Header />
+            <Outlet />
+            <Footer />
         </>
     )
 }
