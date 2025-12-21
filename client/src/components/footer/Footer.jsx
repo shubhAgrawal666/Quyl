@@ -13,7 +13,7 @@ export default function Footer() {
           max-w-7xl mx-auto px-6
           grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3
           gap-8
-          text-center sm:text-left
+          text-center sm:text-center
         "
       >
         {/* Brand */}
@@ -86,11 +86,6 @@ export default function Footer() {
             <li>Address: Raipur, India</li>
           </ul>
         </div>
-      </div>
-
-      {/* Bottom line (optional but recommended) */}
-      <div className="mt-8 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} Quyl. All rights reserved.
       </div>
     </footer>
   );

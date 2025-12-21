@@ -100,33 +100,31 @@ export default function AdminDashboard() {
       {/* RECENT COURSES + USER DISTRIBUTION */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* RECENT COURSES */}
-        <section className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border">
+        <section className="lg:col-span-2 bg-white rounded-2xl p-6 shadow-sm border overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-4">
             <h2 className="text-lg font-semibold">Recent Courses</h2>
-            <a
-              className="text-sm text-orange-600 hover:underline"
-              href="/admin/courses"
-            >
+            <a className="text-sm text-orange-600 hover:underline" href="/admin/courses">
               View all courses
             </a>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 min-w-0">
             {courses.slice(0, 4).map((c) => (
               <div
                 key={c._id}
-                className="flex gap-4 items-start"
+                className="flex flex-col sm:flex-row gap-4 items-start w-full min-w-0"
               >
                 <img
                   src={c.thumbnail}
                   alt={c.title}
-                  className="h-24 w-32 object-cover rounded-md"
+                  className="h-24 w-32 max-w-full object-cover rounded-md shrink-0"
                 />
 
-                <div className="flex-1">
+                <div className="flex-1 min-w-0 overflow-hidden">
                   <div className="font-semibold line-clamp-1">
                     {c.title}
                   </div>
+
                   <div className="text-xs text-gray-500 mt-1">
                     {c.category} • {c.lessons.length || 0} lessons
                   </div>
@@ -136,19 +134,14 @@ export default function AdminDashboard() {
                   </div>
                 </div>
 
-                <div className="text-right text-xs sm:text-sm text-gray-500">
+                <div className="shrink-0 whitespace-nowrap text-xs sm:text-sm text-gray-500">
                   {c.studentsEnrolled?.length || 0} enrolled
                 </div>
               </div>
             ))}
           </div>
-
-          {courses.length === 0 && (
-            <p className="text-center text-gray-500 mt-4">
-              No courses found in database.
-            </p>
-          )}
         </section>
+
 
         {/* USER DISTRIBUTION */}
         <aside className="bg-white rounded-2xl p-6 shadow-sm border">

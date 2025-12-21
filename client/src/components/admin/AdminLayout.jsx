@@ -40,15 +40,16 @@ export default function AdminLayout() {
         {/* SIDEBAR */}
         <aside
           className={`
-            fixed md:static top-0 left-0 z-50
-            h-full md:h-auto
-            w-72 bg-white shadow-xl border-r border-gray-200
-            flex flex-col
-            transform transition-transform duration-300
-            ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            md:translate-x-0
-          `}
+    fixed top-16 left-0 z-50
+    h-[calc(100vh-4rem)]
+    w-72 bg-white shadow-xl border-r border-gray-200
+    flex flex-col
+    transform transition-transform duration-300
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    md:translate-x-0
+  `}
         >
+
           {/* ADMIN TITLE */}
           <div className="p-6 border-b">
             <h1 className="text-xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-transparent bg-clip-text">
@@ -65,10 +66,9 @@ export default function AdminLayout() {
               end
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-lg font-medium text-sm ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-100"
+                `px-4 py-2 rounded-lg font-medium text-sm ${isActive
+                  ? "bg-orange-500 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -79,10 +79,9 @@ export default function AdminLayout() {
               to="/admin/courses"
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-lg font-medium text-sm ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-100"
+                `px-4 py-2 rounded-lg font-medium text-sm ${isActive
+                  ? "bg-orange-500 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -93,10 +92,9 @@ export default function AdminLayout() {
               to="/admin/users"
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-lg font-medium text-sm ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-100"
+                `px-4 py-2 rounded-lg font-medium text-sm ${isActive
+                  ? "bg-orange-500 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -106,7 +104,7 @@ export default function AdminLayout() {
         </aside>
 
         {/* MAIN CONTENT */}
-        <main className="flex-1 p-4 sm:p-6 md:p-8 w-full">
+        <main className="flex-1 p-4 sm:p-6 md:p-8 w-full md:ml-72">
           {/* MOBILE TOGGLE BUTTON */}
           <button
             onClick={() => setSidebarOpen(true)}

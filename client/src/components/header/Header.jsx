@@ -37,8 +37,7 @@ export default function Header() {
   };
 
   const navLinkClass = ({ isActive }) =>
-    `text-lg block py-2 duration-200 ${
-      isActive ? "text-orange-700" : "text-gray-700"
+    `text-lg block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"
     } hover:text-orange-700`;
 
   return (
@@ -59,7 +58,7 @@ export default function Header() {
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-8">
+            <div className="font-semibold hidden md:flex items-center space-x-8">
               <NavLink to="/" className={navLinkClass}>Home</NavLink>
 
               {!isAuthenticated && (
@@ -81,7 +80,7 @@ export default function Header() {
                   {user?.role === "admin" && (
                     <NavLink
                       to="/admin"
-                      className="text-lg text-red-700 font-semibold hover:text-red-800"
+                      className={navLinkClass}
                     >
                       Admin Panel
                     </NavLink>
@@ -96,7 +95,7 @@ export default function Header() {
 
                 {/* Mobile Hamburger */}
                 <button
-                  className="md:hidden text-2xl text-gray-700"
+                  className="md:hidden text-2xl text-black"
                   onClick={() => setMobileMenuOpen((prev) => !prev)}
                 >
                   ☰
@@ -165,43 +164,83 @@ export default function Header() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-white border-t shadow-lg px-4 py-4 space-y-3">
-            <NavLink to="/" onClick={() => setMobileMenuOpen(false)} className={navLinkClass}>
+          <div className="font-semibold md:hidden bg-white border-t shadow-lg px-4 py-4 space-y-3">
+
+            {/* NAV LINKS */}
+            <NavLink
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={navLinkClass}
+            >
               Home
             </NavLink>
 
             {!isAuthenticated && (
-              <NavLink to="/courses" onClick={() => setMobileMenuOpen(false)} className={navLinkClass}>
+              <NavLink
+                to="/courses"
+                onClick={() => setMobileMenuOpen(false)}
+                className={navLinkClass}
+              >
                 Explore Courses
               </NavLink>
             )}
 
             {isAuthenticated && (
               <>
-                <NavLink to="/my-courses" onClick={() => setMobileMenuOpen(false)} className={navLinkClass}>
+                <NavLink
+                  to="/my-courses"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={navLinkClass}
+                >
                   My Courses
                 </NavLink>
 
-                <NavLink to="/courses" onClick={() => setMobileMenuOpen(false)} className={navLinkClass}>
+                <NavLink
+                  to="/courses"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={navLinkClass}
+                >
                   All Courses
                 </NavLink>
 
                 {user?.role === "admin" && (
-                  <NavLink to="/admin" onClick={() => setMobileMenuOpen(false)} className="text-red-700 font-semibold">
+                  <NavLink
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={navLinkClass}
+                  >
                     Admin Panel
                   </NavLink>
                 )}
-
-                <button
-                  onClick={handleLogout}
-                  className="block w-full text-left text-red-600 font-medium mt-2"
-                >
-                  Logout
-                </button>
               </>
             )}
+
+            {/* DIVIDER */}
+            <div className="border-t pt-3 mt-3"/>
+
+            {/* AUTH ACTIONS */}
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 rounded-lg border border-orange-200 text-orange-700 hover:bg-orange-50"
+                >
+                  Log in
+                </Link>
+
+                <Link
+                  to="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-700 text-white"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            ) }
           </div>
         )}
+
       </nav>
     </header>
   );
