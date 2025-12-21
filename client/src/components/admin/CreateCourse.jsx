@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { createCourse } from "../../api/admin";
@@ -12,7 +11,6 @@ export default function CreateCourse() {
   const [thumbnail, setThumbnail] = useState("");
   const [description, setDescription] = useState("");
 
-  
   const [videos, setVideos] = useState([
     {
       id: uuidv4(),
@@ -36,7 +34,6 @@ export default function CreateCourse() {
       prev.map((v) => (v.id === id ? { ...v, [field]: value } : v))
     );
 
-  
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -68,12 +65,14 @@ export default function CreateCourse() {
   };
 
   return (
-    <div className="max-w-3xl">
-      <h1 className="text-2xl font-bold mb-4">Create Course</h1>
+    <div className="w-full max-w-3xl">
+      <h1 className="text-xl sm:text-2xl font-bold mb-4">
+        Create Course
+      </h1>
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white p-6 rounded-xl shadow space-y-4"
+        className="bg-white p-4 sm:p-6 rounded-xl shadow space-y-4"
       >
         {/* Title */}
         <div>
@@ -88,7 +87,7 @@ export default function CreateCourse() {
         </div>
 
         {/* Category + Thumbnail */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium">Category</label>
             <input
@@ -100,7 +99,9 @@ export default function CreateCourse() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium">Thumbnail URL</label>
+            <label className="block text-sm font-medium">
+              Thumbnail URL
+            </label>
             <input
               value={thumbnail}
               onChange={(e) => setThumbnail(e.target.value)}
@@ -112,7 +113,9 @@ export default function CreateCourse() {
 
         {/* Description */}
         <div>
-          <label className="block text-sm font-medium">Description</label>
+          <label className="block text-sm font-medium">
+            Description
+          </label>
           <textarea
             value={description}
             onChange={(e) => setDescription(e.target.value)}
@@ -123,12 +126,12 @@ export default function CreateCourse() {
 
         {/* Lessons Section */}
         <div>
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <h2 className="font-semibold">Lessons / Videos</h2>
             <button
               type="button"
               onClick={addVideo}
-              className="px-3 py-1 bg-blue-600 text-white rounded"
+              className="w-full sm:w-auto px-3 py-2 bg-blue-600 text-white rounded"
             >
               Add Lesson
             </button>
@@ -136,9 +139,14 @@ export default function CreateCourse() {
 
           <div className="mt-3 space-y-3">
             {videos.map((v, idx) => (
-              <div key={v.id} className="p-3 border rounded-lg bg-gray-50">
-                <div className="flex justify-between items-start mb-2">
-                  <div className="text-sm font-medium">Lesson #{idx + 1}</div>
+              <div
+                key={v.id}
+                className="p-3 border rounded-lg bg-gray-50"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="text-sm font-medium">
+                    Lesson #{idx + 1}
+                  </div>
 
                   <button
                     type="button"
@@ -149,8 +157,7 @@ export default function CreateCourse() {
                   </button>
                 </div>
 
-                {/* Lesson Fields */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                   <input
                     placeholder="Lesson Title"
                     value={v.title}
@@ -163,7 +170,9 @@ export default function CreateCourse() {
                   <input
                     placeholder="YouTube Video URL"
                     value={v.url}
-                    onChange={(e) => updateVideo(v.id, "url", e.target.value)}
+                    onChange={(e) =>
+                      updateVideo(v.id, "url", e.target.value)
+                    }
                     className="border p-2 rounded"
                   />
 
@@ -173,7 +182,7 @@ export default function CreateCourse() {
                     onChange={(e) =>
                       updateVideo(v.id, "duration", e.target.value)
                     }
-                    className="border p-2 rounded"
+                    className="border p-2 rounded sm:col-span-2"
                   />
                 </div>
               </div>
@@ -185,7 +194,7 @@ export default function CreateCourse() {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg"
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg"
           >
             Create Course
           </button>

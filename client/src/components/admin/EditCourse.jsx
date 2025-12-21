@@ -5,7 +5,7 @@ import { updateCourse } from "../../api/admin";
 import { v4 as uuidv4 } from "uuid";
 
 export default function EditCourse() {
-  const { courseId } = useParams(); 
+  const { courseId } = useParams();
   const navigate = useNavigate();
 
   const [course, setCourse] = useState(null);
@@ -16,7 +16,6 @@ export default function EditCourse() {
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  
   useEffect(() => {
     async function loadCourse() {
       try {
@@ -34,7 +33,6 @@ export default function EditCourse() {
         setThumbnail(c.thumbnail);
         setDescription(c.description);
 
-        
         setVideos(
           c.lessons.map((l) => ({
             id: uuidv4(),
@@ -97,16 +95,16 @@ export default function EditCourse() {
     }
   };
 
-  if (loading) return <p>Loading...</p>;
-  if (!course) return <p>Course not found</p>;
+  if (loading) return <p className="text-center mt-10">Loading...</p>;
+  if (!course) return <p className="text-center mt-10">Course not found</p>;
 
   return (
-    <div className="max-w-3xl">
+    <div className="w-full max-w-3xl mx-auto px-4 sm:px-0">
       <h1 className="text-2xl font-bold mb-4">Edit Course</h1>
 
       <form
         onSubmit={handleSave}
-        className="space-y-4 bg-white p-6 rounded-xl shadow"
+        className="space-y-4 bg-white p-4 sm:p-6 rounded-xl shadow"
       >
         {/* Title */}
         <div>
@@ -119,7 +117,7 @@ export default function EditCourse() {
         </div>
 
         {/* Category + Thumbnail */}
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="text-sm font-medium">Category</label>
             <input
@@ -152,12 +150,12 @@ export default function EditCourse() {
 
         {/* Lessons */}
         <div>
-          <div className="flex items-center justify-between mb-2">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
             <h2 className="font-semibold">Lessons / Videos</h2>
             <button
               type="button"
               onClick={addVideo}
-              className="px-3 py-1 bg-blue-600 text-white rounded"
+              className="px-3 py-1 bg-blue-600 text-white rounded w-full sm:w-auto"
             >
               Add Video
             </button>
@@ -165,9 +163,14 @@ export default function EditCourse() {
 
           <div className="space-y-3">
             {videos.map((v, idx) => (
-              <div key={v.id} className="p-3 border rounded-lg bg-gray-50">
+              <div
+                key={v.id}
+                className="p-3 border rounded-lg bg-gray-50"
+              >
                 <div className="flex justify-between items-start mb-2">
-                  <div className="text-sm font-medium">Lesson #{idx + 1}</div>
+                  <div className="text-sm font-medium">
+                    Lesson #{idx + 1}
+                  </div>
                   <button
                     type="button"
                     onClick={() => removeVideo(v.id)}
@@ -177,18 +180,21 @@ export default function EditCourse() {
                   </button>
                 </div>
 
-                {/* Editable fields */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                   <input
                     value={v.title}
-                    onChange={(e) => updateVideo(v.id, "title", e.target.value)}
+                    onChange={(e) =>
+                      updateVideo(v.id, "title", e.target.value)
+                    }
                     placeholder="Lesson title"
                     className="border p-2 rounded"
                   />
 
                   <input
                     value={v.url}
-                    onChange={(e) => updateVideo(v.id, "url", e.target.value)}
+                    onChange={(e) =>
+                      updateVideo(v.id, "url", e.target.value)
+                    }
                     placeholder="YouTube Video URL"
                     className="border p-2 rounded"
                   />
@@ -211,7 +217,7 @@ export default function EditCourse() {
         <div className="flex justify-end">
           <button
             type="submit"
-            className="px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded"
+            className="w-full sm:w-auto px-6 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded"
           >
             Save Changes
           </button>

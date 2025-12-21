@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import Header from "../header/Header.jsx";
 import { useAuth } from "../../context/AuthContext";
@@ -7,7 +7,8 @@ export default function AdminLayout() {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
 
-  
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
   useEffect(() => {
     if (!loading) {
       if (!user) {
@@ -27,16 +28,35 @@ export default function AdminLayout() {
       {/* MAIN WEBSITE NAVBAR */}
       <Header />
 
-      <div className="flex flex-1">
+      <div className="flex flex-1 relative">
+        {/* MOBILE OVERLAY */}
+        {sidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black/40 z-40 md:hidden"
+            onClick={() => setSidebarOpen(false)}
+          />
+        )}
+
         {/* SIDEBAR */}
-        <aside className="w-72 bg-white shadow-xl border-r border-gray-200 flex flex-col">
+        <aside
+          className={`
+    fixed top-16 left-0 z-50
+    h-[calc(100vh-4rem)]
+    w-72 bg-white shadow-xl border-r border-gray-200
+    flex flex-col
+    transform transition-transform duration-300
+    ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
+    md:translate-x-0
+  `}
+        >
+
           {/* ADMIN TITLE */}
           <div className="p-6 border-b">
             <h1 className="text-xl font-bold bg-gradient-to-r from-orange-500 to-orange-600 text-transparent bg-clip-text">
               Admin Panel
             </h1>
             <p className="text-xs text-gray-500 mt-1">
-              Manage platform content &amp; users
+              Manage platform content & users
             </p>
           </div>
 
@@ -44,11 +64,11 @@ export default function AdminLayout() {
             <NavLink
               to="/admin"
               end
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-lg font-medium text-sm ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-100"
+                `px-4 py-2 rounded-lg font-medium text-sm ${isActive
+                  ? "bg-orange-500 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -57,11 +77,11 @@ export default function AdminLayout() {
 
             <NavLink
               to="/admin/courses"
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-lg font-medium text-sm ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-100"
+                `px-4 py-2 rounded-lg font-medium text-sm ${isActive
+                  ? "bg-orange-500 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -70,11 +90,11 @@ export default function AdminLayout() {
 
             <NavLink
               to="/admin/users"
+              onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `px-4 py-2 rounded-lg font-medium text-sm ${
-                  isActive
-                    ? "bg-orange-500 text-white shadow"
-                    : "text-gray-700 hover:bg-gray-100"
+                `px-4 py-2 rounded-lg font-medium text-sm ${isActive
+                  ? "bg-orange-500 text-white shadow"
+                  : "text-gray-700 hover:bg-gray-100"
                 }`
               }
             >
@@ -83,8 +103,16 @@ export default function AdminLayout() {
           </nav>
         </aside>
 
-        {/* MAIN CONTENT AREA */}
-        <main className="flex-1 p-8">
+        {/* MAIN CONTENT */}
+        <main className="flex-1 p-4 sm:p-6 md:p-8 w-full md:ml-72">
+          {/* MOBILE TOGGLE BUTTON */}
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="md:hidden mb-4 px-4 py-2 bg-orange-500 text-white rounded-lg shadow"
+          >
+            ☰ Menu
+          </button>
+
           <Outlet />
         </main>
       </div>

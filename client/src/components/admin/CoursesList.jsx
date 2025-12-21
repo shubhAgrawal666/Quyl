@@ -10,7 +10,6 @@ export default function CoursesList() {
   const [filter, setFilter] = useState("all");
   const [loading, setLoading] = useState(true);
 
-  
   useEffect(() => {
     async function loadCourses() {
       try {
@@ -31,7 +30,6 @@ export default function CoursesList() {
 
     try {
       const res = await deleteCourse(slug);
-
       if (res.data.success) {
         alert("Course deleted!");
         setCourses((prev) => prev.filter((c) => c.slug !== slug));
@@ -56,14 +54,17 @@ export default function CoursesList() {
     );
   });
 
-  if (loading) return <p className="text-center mt-10">Loading courses...</p>;
+  if (loading)
+    return <p className="text-center mt-10">Loading courses...</p>;
 
   return (
-    <div>
+    <div className="w-full">
       {/* HEADER */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Manage Courses</h1>
+          <h1 className="text-2xl font-bold text-gray-900">
+            Manage Courses
+          </h1>
           <p className="text-gray-500 text-sm mt-1">
             Review, edit and manage all courses
           </p>
@@ -71,25 +72,25 @@ export default function CoursesList() {
 
         <button
           onClick={() => navigate("/admin/courses/new")}
-          className="px-4 py-2 bg-orange-500 text-white shadow rounded-lg hover:bg-orange-600"
+          className="w-full sm:w-auto px-4 py-2 bg-orange-500 text-white shadow rounded-lg hover:bg-orange-600"
         >
           + New Course
         </button>
       </div>
 
       {/* FILTERS */}
-      <div className="flex items-center gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search courses..."
-          className="px-4 py-2 border rounded-lg w-64 text-sm"
+          className="px-4 py-2 border rounded-lg w-full sm:w-64 text-sm"
         />
 
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="px-4 py-2 border rounded-lg text-sm"
+          className="px-4 py-2 border rounded-lg text-sm w-full sm:w-auto"
         >
           <option value="all">All categories</option>
           {categories.map((cat) => (
@@ -101,22 +102,25 @@ export default function CoursesList() {
       </div>
 
       {/* COURSE CARDS */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {filtered.map((course) => (
           <div
             key={course._id}
             className="bg-white border rounded-2xl shadow-md hover:shadow-lg transition p-5"
           >
-            <div className="flex gap-4">
+            <div className="flex flex-col sm:flex-row gap-4">
               <img
                 src={course.thumbnail}
                 alt={course.title}
-                className="h-32 w-40 object-cover rounded-lg"
+                className="h-40 sm:h-32 w-full sm:w-40 object-cover rounded-lg"
               />
-              <div className="flex-1">
-                <h2 className="font-semibold text-lg">{course.title}</h2>
 
-                <div className="mt-1 flex items-center gap-2">
+              <div className="flex-1">
+                <h2 className="font-semibold text-lg">
+                  {course.title}
+                </h2>
+
+                <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span className="px-2 py-1 bg-orange-100 text-orange-700 text-xs rounded-full">
                     {course.category}
                   </span>
@@ -129,18 +133,18 @@ export default function CoursesList() {
                   {course.description}
                 </p>
 
-                <div className="mt-3 flex items-center justify-between">
-                  <span className="text-gray-500 text-sm">
-                    👥 {course.studentsEnrolled?.length || 0} enrolled
-                  </span>
+                <div className="mt-3 text-gray-500 text-sm">
+                  👥 {course.studentsEnrolled?.length || 0} enrolled
                 </div>
               </div>
             </div>
 
             {/* ACTION BUTTONS */}
-            <div className="mt-5 flex items-center justify-between">
+            <div className="mt-5 flex flex-col sm:flex-row gap-3 sm:justify-between">
               <button
-                onClick={() => navigate(`/admin/courses/${course.slug}/edit`)}
+                onClick={() =>
+                  navigate(`/admin/courses/${course.slug}/edit`)
+                }
                 className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200"
               >
                 Edit
@@ -165,7 +169,9 @@ export default function CoursesList() {
       </div>
 
       {filtered.length === 0 && (
-        <div className="text-center text-gray-500 mt-6">No courses found.</div>
+        <div className="text-center text-gray-500 mt-6">
+          No courses found.
+        </div>
       )}
     </div>
   );

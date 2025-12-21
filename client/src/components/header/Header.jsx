@@ -4,13 +4,15 @@ import { useAuth } from "../../context/AuthContext";
 import logo from "../logo.jpg";
 
 export default function Header() {
-  const { isAuthenticated, user,logout, loading } = useAuth();
+  const { isAuthenticated, user, logout, loading } = useAuth();
   const navigate = useNavigate();
 
   const [openProfileMenu, setOpenProfileMenu] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   const profileRef = useRef(null);
 
-  // Close menu on outside click
+  // Close profile dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
       if (profileRef.current && !profileRef.current.contains(e.target)) {
@@ -21,19 +23,22 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLogout = () => {
-  setOpenProfileMenu(false);
-
-  setTimeout(async () => {
+  const handleLogout = async () => {
+    setOpenProfileMenu(false);
+    setMobileMenuOpen(false);
     await logout();
     navigate("/");
-  }, 600);
-};
+  };
 
   const handleResetPassword = () => {
     navigate("/profile#reset");
     setOpenProfileMenu(false);
+    setMobileMenuOpen(false);
   };
+
+  const navLinkClass = ({ isActive }) =>
+    `text-lg block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"
+    } hover:text-orange-700`;
 
   return (
     <header className="sticky top-0 z-50">
@@ -52,163 +57,190 @@ export default function Header() {
               </div>
             </Link>
 
-            {/* Navigation */}
-            <div className="hidden md:flex md:items-center md:space-x-8">
-              <ul className="flex flex-col justify-center items-center mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+            {/* Desktop Navigation */}
+            <div className="font-semibold hidden md:flex items-center space-x-8">
+              <NavLink to="/" className={navLinkClass}>Home</NavLink>
 
-                {/* Home */}
-                <li>
-                  <NavLink
-                    to="/"
-                    className={({ isActive }) =>
-                      `text-lg block py-2 duration-200 ${
-                        isActive ? "text-orange-700" : "text-gray-700"
-                      } hover:text-orange-700`
-                    }
-                  >
-                    Home
+              {!isAuthenticated && (
+                <NavLink to="/courses" className={navLinkClass}>
+                  Explore Courses
+                </NavLink>
+              )}
+
+              {isAuthenticated && (
+                <>
+                  <NavLink to="/my-courses" className={navLinkClass}>
+                    My Courses
                   </NavLink>
-                </li>
 
-                {/* Explore Courses (When logged out) */}
-                {!isAuthenticated && (
-                  <li>
+                  <NavLink to="/courses" className={navLinkClass}>
+                    All Courses
+                  </NavLink>
+
+                  {user?.role === "admin" && (
                     <NavLink
-                      to="/courses"
-                      className={({ isActive }) =>
-                        `text-lg block py-2 duration-200 ${
-                          isActive ? "text-orange-700" : "text-gray-700"
-                        } hover:text-orange-700`
-                      }
+                      to="/admin"
+                      className={navLinkClass}
                     >
-                      Explore Courses
+                      Admin Panel
                     </NavLink>
-                  </li>
-                )}
-
-                {/* Authenticated Routes */}
-                {isAuthenticated && (
-                  <>
-                    <li>
-                      <NavLink
-                        to="/my-courses"
-                        className={({ isActive }) =>
-                          `text-lg block py-2 duration-200 ${
-                            isActive ? "text-orange-700" : "text-gray-700"
-                          } hover:text-orange-700`
-                        }
-                      >
-                        My Courses
-                      </NavLink>
-                    </li>
-
-                    <li>
-                      <NavLink
-                        to="/courses"
-                        className={({ isActive }) =>
-                          `text-lg block py-2 duration-200 ${
-                            isActive ? "text-orange-700" : "text-gray-700"
-                          } hover:text-orange-700`
-                        }
-                      >
-                        All Courses
-                      </NavLink>
-                    </li>
-
-                    {/* Admin Panel */}
-                    {user?.role === "admin" && (
-                      <li>
-                        <NavLink
-                          to="/admin"
-                          className="text-lg text-red-700 font-semibold hover:text-red-800"
-                        >
-                          Admin Panel
-                        </NavLink>
-                      </li>
-                    )}
-                  </>
-                )}
-
-              </ul>
+                  )}
+                </>
+              )}
             </div>
 
             {/* Right Section */}
             {!loading && (
               <div className="flex items-center gap-3">
 
-                {/* If not logged in */}
+                {/* Mobile Hamburger */}
+                <button
+                  className="md:hidden text-2xl text-black"
+                  onClick={() => setMobileMenuOpen((prev) => !prev)}
+                >
+                  ☰
+                </button>
+
+                {/* Auth Buttons / Profile */}
                 {!isAuthenticated ? (
-                  <>
+                  <div className="hidden sm:flex gap-2">
                     <Link
                       to="/login"
-                      className="inline-flex items-center px-3 py-2 rounded-lg text-sm font-medium border border-orange-200 text-orange-700 bg-white hover:bg-orange-50 transition"
+                      className="px-3 py-2 rounded-lg text-sm border border-orange-200 text-orange-700 bg-white hover:bg-orange-50"
                     >
                       Log in
                     </Link>
-
                     <Link
                       to="/signup"
-                      className="inline-flex items-center px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-700 text-white shadow-md hover:scale-[1.02] transition"
+                      className="px-4 py-2 rounded-lg text-sm font-semibold bg-gradient-to-r from-orange-500 to-orange-700 text-white"
                     >
                       Sign Up
                     </Link>
-                  </>
+                  </div>
                 ) : (
-                  /* Logged in — Profile Dropdown */
                   <div className="relative" ref={profileRef}>
                     <button
-                      onClick={() => setOpenProfileMenu((prev) => !prev)}
-                      className="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100 transition-colors"
+                      onClick={() => setOpenProfileMenu((p) => !p)}
+                      className="flex items-center gap-2 px-3 py-2 rounded-full border border-gray-300 bg-white hover:bg-gray-100"
                     >
                       <span className="h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center font-semibold">
                         {user?.name?.charAt(0).toUpperCase()}
                       </span>
-                      <span className="hidden sm:block text-sm font-medium text-gray-800">
+                      <span className="hidden sm:block text-sm font-medium">
                         {user?.name}
                       </span>
                     </button>
 
-                    {/* Dropdown */}
                     {openProfileMenu && (
-                      <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-200 rounded-2xl shadow-lg p-4 z-50">
-
-                        {/* User Info */}
-                        <div className="pb-3 mb-3 border-b border-gray-200">
-                          <p className="text-sm font-semibold text-gray-800">
-                            {user?.name}
-                          </p>
+                      <div className="absolute right-0 mt-2 w-64 bg-white border rounded-2xl shadow-lg p-4">
+                        <div className="pb-3 mb-3 border-b">
+                          <p className="text-sm font-semibold">{user?.name}</p>
                           <p className="text-xs text-gray-500 break-all">
                             {user?.email}
                           </p>
                         </div>
 
-                        {/* Menu Actions */}
-                        <div className="flex flex-col gap-2 text-sm">
-                          <button
-                            onClick={handleResetPassword}
-                            className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
-                          >
-                            Reset password
-                          </button>
+                        <button
+                          onClick={handleResetPassword}
+                          className="w-full text-left px-3 py-2 rounded-lg hover:bg-gray-100"
+                        >
+                          Reset password
+                        </button>
 
-                          <button
-                            onClick={handleLogout}
-                            className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
-                          >
-                            Logout
-                          </button>
-                        </div>
+                        <button
+                          onClick={handleLogout}
+                          className="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50"
+                        >
+                          Logout
+                        </button>
                       </div>
                     )}
-
                   </div>
                 )}
-
               </div>
             )}
-
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="font-semibold md:hidden bg-white border-t shadow-lg px-4 py-4 space-y-3">
+
+            {/* NAV LINKS */}
+            <NavLink
+              to="/"
+              onClick={() => setMobileMenuOpen(false)}
+              className={navLinkClass}
+            >
+              Home
+            </NavLink>
+
+            {!isAuthenticated && (
+              <NavLink
+                to="/courses"
+                onClick={() => setMobileMenuOpen(false)}
+                className={navLinkClass}
+              >
+                Explore Courses
+              </NavLink>
+            )}
+
+            {isAuthenticated && (
+              <>
+                <NavLink
+                  to="/my-courses"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={navLinkClass}
+                >
+                  My Courses
+                </NavLink>
+
+                <NavLink
+                  to="/courses"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={navLinkClass}
+                >
+                  All Courses
+                </NavLink>
+
+                {user?.role === "admin" && (
+                  <NavLink
+                    to="/admin"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={navLinkClass}
+                  >
+                    Admin Panel
+                  </NavLink>
+                )}
+              </>
+            )}
+
+            {/* DIVIDER */}
+            <div className="border-t pt-3 mt-3"/>
+
+            {/* AUTH ACTIONS */}
+            {!isAuthenticated && (
+              <div className="flex flex-col gap-2">
+                <Link
+                  to="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 rounded-lg border border-orange-200 text-orange-700 hover:bg-orange-50"
+                >
+                  Log in
+                </Link>
+
+                <Link
+                  to="/signup"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full text-center px-4 py-2 rounded-lg font-semibold bg-gradient-to-r from-orange-500 to-orange-700 text-white"
+                >
+                  Sign Up
+                </Link>
+              </div>
+            ) }
+          </div>
+        )}
+
       </nav>
     </header>
   );

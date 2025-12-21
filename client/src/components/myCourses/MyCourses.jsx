@@ -27,32 +27,40 @@ export default function MyCourses() {
     fetchCourses();
   }, []);
 
+  /* Loading */
   if (loading) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
-        <p className="text-lg font-semibold text-gray-700">Loading your courses...</p>
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
+        <p className="text-base sm:text-lg font-semibold text-gray-700">
+          Loading your courses...
+        </p>
       </div>
     );
   }
 
+  /* Error */
   if (err) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white shadow-md rounded-xl px-6 py-4 border border-red-200">
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
+        <div className="bg-white shadow-md rounded-xl px-6 py-4 border border-red-200 max-w-md w-full text-center">
           <p className="text-red-600 font-semibold mb-2">Error</p>
-          <p className="text-gray-700">{err}</p>
+          <p className="text-gray-700 text-sm sm:text-base">{err}</p>
         </div>
       </div>
     );
   }
 
+  /* Empty */
   if (courses.length === 0) {
     return (
-      <div className="h-screen w-screen flex items-center justify-center bg-gray-50">
-        <div className="bg-white shadow-md rounded-xl px-8 py-6 border border-gray-200 text-center">
-          <h2 className="text-2xl font-bold text-gray-800 mb-2">No Courses Yet</h2>
-          <p className="text-gray-600">
-            You haven’t enrolled in any courses. Go to the courses page and start learning!
+      <div className="min-h-screen w-full flex items-center justify-center bg-gray-50 px-4">
+        <div className="bg-white shadow-md rounded-xl px-8 py-6 border border-gray-200 text-center max-w-md">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-2">
+            No Courses Yet
+          </h2>
+          <p className="text-gray-600 text-sm sm:text-base">
+            You haven’t enrolled in any courses. Go to the courses page and start
+            learning!
           </p>
         </div>
       </div>
@@ -60,13 +68,13 @@ export default function MyCourses() {
   }
 
   return (
-    <div className="min-h-screen w-screen bg-gray-50 flex justify-center">
-      <div className="w-full max-w-6xl px-4 py-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6 tracking-wide">
+    <div className="min-h-screen w-full bg-gray-50 flex justify-center">
+      <div className="w-full max-w-6xl px-4 sm:px-6 py-8 sm:py-10">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 tracking-wide">
           My Courses
         </h1>
 
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
           {courses.map((course) => (
             <div
               key={course._id}
@@ -86,12 +94,13 @@ export default function MyCourses() {
                 <h2 className="text-lg font-semibold text-gray-800 line-clamp-2">
                   {course.title}
                 </h2>
+
                 <p className="text-sm text-gray-600 line-clamp-3">
                   {course.description}
                 </p>
 
-                <div className="flex justify-between items-center mt-3 text-sm text-gray-500">
-                  <span className="px-2 py-1 rounded-full bg-gray-100 text-xs font-medium">
+                <div className="flex justify-between items-center mt-3 text-xs sm:text-sm text-gray-500">
+                  <span className="px-2 py-1 rounded-full bg-gray-100 font-medium">
                     {course.category || "General"}
                   </span>
                   <span>{course.lessons?.length || 0} lessons</span>
@@ -99,7 +108,7 @@ export default function MyCourses() {
 
                 <button
                   className="mt-4 w-full bg-blue-600 text-white py-2 rounded-lg font-semibold tracking-wide text-sm hover:bg-blue-700 transition-colors"
-                  onClick={() => {navigate(`/courses/${course.slug}`)}}
+                  onClick={() => navigate(`/courses/${course.slug}`)}
                 >
                   Continue Learning
                 </button>
