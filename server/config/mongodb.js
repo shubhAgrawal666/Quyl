@@ -1,30 +1,38 @@
 import mongoose from "mongoose";
 
+let cached = global.mongoose;
+
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
+
 const connectDB = async () => {
-  try {
-    mongoose.connection.on("connected", () => {
-      console.log("✅ Database Connected Successfully");
-    });
+  if (cached.conn) {
+    return cached.conn;
+  }
 
-    mongoose.connection.on("error", (err) => {
-      console.error("❌ Database Connection Error:", err);
-    });
-
+  if (!cached.promise) {
     const mongoURL = process.env.MONGODB_URL.replace(
       "<PASSWORD>",
       process.env.DB_PASS
     );
-
-    await mongoose.connect(mongoURL, {
-      dbName: process.env.DB_NAME || "test",
-    });
-  } catch (error) {
-    console.error("❌ MongoDB Connection Failed:", error.message);
-
-    if (process.env.NODE_ENV !== "production") {
-      process.exit(1);
+    if (!mongoURL) {
+      throw new Error("MONGODB_URL not defined");
     }
+
+    cached.promise = mongoose
+      .connect(mongoURL, {
+        dbName: process.env.DB_NAME || "test",
+        bufferCommands: false,
+      })
+      .then((mongoose) => {
+        console.log("✅ MongoDB connected");
+        return mongoose;
+      });
   }
+
+  cached.conn = await cached.promise;
+  return cached.conn;
 };
 
 export default connectDB;
