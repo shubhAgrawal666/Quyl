@@ -1,5 +1,5 @@
 import express from "express";
-import connectDB from "/config/mongodb.js";
+import connectDB from "../config/mongodb.js";
 import authRoutes from "../routes/authRoutes.js";
 import courseRoutes from "../routes/courseRoutes.js";
 import adminRoutes from "../routes/adminRoutes.js";
