@@ -3,6 +3,8 @@ import axios from "axios";
 
 axios.defaults.withCredentials = true;
 
+const API_BASE_URL = import.meta.env.VITE_BACKEND_URL || "/api";
+
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
@@ -12,7 +14,7 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
-      const res = await axios.get("http://localhost:4000/api/auth/is-auth", {
+      const res = await axios.get(`${API_BASE_URL}/auth/is-auth`, {
         withCredentials: true,
       });
 
@@ -24,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null);
       }
     } catch (error) {
-      error
+      console.error("Auth check error:", error);
       setIsAuthenticated(false);
       setUser(null);
     } finally {
@@ -35,15 +37,20 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     checkAuth();
   }, []);
+
   const logout = async () => {
     try {
-      await axios.post("http://localhost:4000/api/auth/logout", {
-        withCredentials: true,
-      });
+      await axios.post(
+        `${API_BASE_URL}/auth/logout`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
       setIsAuthenticated(false);
       setUser(null);
     } catch (error) {
-      error
+      console.error("Logout error:", error);
     }
   };
 
@@ -61,5 +68,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
 // eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);
