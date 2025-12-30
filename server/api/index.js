@@ -13,7 +13,7 @@ connectDB();
 
 app.use(
   cors({
-    origin: true,
+    origin: ["https://quyl-frontend.vercel.app", "http://localhost:5173"],
     credentials: true,
   })
 );
