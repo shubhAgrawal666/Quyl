@@ -34,7 +34,7 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-app.options("*", cors(corsOptions));
+app.options("/*splat", cors(corsOptions));
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -49,7 +49,6 @@ app.get("/api/health", (req, res) => {
     success: true,
     message: "Backend running on Vercel",
     timestamp: new Date().toISOString(),
-    mongooseState: require("mongoose").connection.readyState,
   });
 });
 
@@ -61,8 +60,15 @@ app.get("/", (req, res) => {
   });
 });
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found",
+  });
+});
+
 app.use((err, req, res, next) => {
-  console.error("Error:", err);
+  console.error("Server Error:", err);
   res.status(500).json({
     success: false,
     message: "Internal server error",
