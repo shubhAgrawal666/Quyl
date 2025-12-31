@@ -1,38 +1,45 @@
 import mongoose from "mongoose";
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
-
 const connectDB = async () => {
-  if (cached.conn) {
-    return cached.conn;
-  }
+  try {
+    if (mongoose.connection.readyState >= 1) {
+      console.log("✅ Already connected to MongoDB");
+      return;
+    }
 
-  if (!cached.promise) {
-    const mongoURL = process.env.MONGODB_URL.replace(
+    const mongoURL = process.env.MONGODB_URL?.replace(
       "<PASSWORD>",
       process.env.DB_PASS
     );
+
     if (!mongoURL) {
-      throw new Error("MONGODB_URL not defined");
+      throw new Error("MONGODB_URL environment variable is not defined");
     }
 
-    cached.promise = mongoose
-      .connect(mongoURL, {
-        dbName: process.env.DB_NAME || "test",
-        bufferCommands: false,
-      })
-      .then((mongoose) => {
-        console.log("✅ MongoDB connected");
-        return mongoose;
-      });
-  }
+    const options = {
+      dbName: process.env.DB_NAME || "test",
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    };
 
-  cached.conn = await cached.promise;
-  return cached.conn;
+    await mongoose.connect(mongoURL, options);
+
+    console.log("✅ MongoDB Connected Successfully");
+
+    mongoose.connection.on("error", (err) => {
+      console.error("❌ MongoDB Error:", err);
+    });
+
+    mongoose.connection.on("disconnected", () => {
+      console.log("⚠️ MongoDB Disconnected");
+    });
+  } catch (error) {
+    console.error("❌ MongoDB Connection Failed:", error.message);
+    if (process.env.NODE_ENV !== "production") {
+      throw error;
+    }
+  }
 };
 
 export default connectDB;
