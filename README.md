@@ -182,13 +182,13 @@ npm run build   # Build for production
 
 - **Production (Deployed):**
   - Frontend: [https://quyl-frontend.vercel.app/](https://quyl-frontend.vercel.app/)
-  - Backend API: [https://quyl-backend.vercel.app/api](https://quyl-backend.vercel.app/api)
+  - Backend API: [https://quyl-backend.vercel.app](https://quyl-backend.vercel.app)
 
 ## 📚 API Documentation
 
 ### Base URL
 - **Development**: `http://localhost:4000/api`
-- **Production**: `https://quyl-backend.vercel.app/api`
+- **Production**: `https://quyl-backend.vercel.app`
 
 ### API Health Check
 ```http
@@ -563,9 +563,17 @@ Create a `.env` file in the `client/` directory:
 VITE_API_URL=https://quyl-backend.vercel.app
 ```
 
+## Contributors
+
+- Shubh Agrawal
+- Pranav Sai Sumiran Savant
+- Soumil Soni
+- Samyak Gupta
+
+
 ## 📧 Contact
 
-For questions or support, please contact at [quyl.feedback1@gmail.com](quyl.feedback1@gmail.com).
+For questions or support, please contact at [quyl.feedback1@gmail.com](mailto:quyl.feedback1@gmail.com).
 
 ---
 
