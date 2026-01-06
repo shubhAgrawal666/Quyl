@@ -1,9 +1,11 @@
 import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import connectDB from "../config/mongodb.js";
 import "dotenv/config";
 
 const authMiddleware = async (req, res, next) => {
   try {
+    await connectDB();
     const token = req.headers.authorization?.startsWith("Bearer ")
       ? req.headers.authorization.split(" ")[1]
       : req.cookies?.token;

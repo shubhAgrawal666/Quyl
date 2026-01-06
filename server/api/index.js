@@ -9,8 +9,6 @@ import "dotenv/config";
 
 const app = express();
 
-connectDB();
-
 const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);

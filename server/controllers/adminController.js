@@ -4,10 +4,12 @@ import Course from "../models/courseModel.js";
 import Progress from "../models/ProgressModel.js";
 import generateToken from "../utils/generateToken.js";
 import transporter from "../config/nodemailer.js";
+import connectDB from "../config/mongodb.js";
 import "dotenv/config";
 
 export const getAllUsers = async (req, res) => {
   try {
+    await connectDB();
     const users = await User.find()
       .select("name email role createdAt isVerified")
       .lean();
@@ -17,33 +19,37 @@ export const getAllUsers = async (req, res) => {
     const courses = await Course.find().select("title lessons").lean();
 
     const courseMap = {};
-    courses.forEach(c => {
+    courses.forEach((c) => {
       courseMap[c._id] = { title: c.title, totalLessons: c.lessons.length };
     });
 
     const progressByUser = {};
-    progresses.forEach(p => {
+    progresses.forEach((p) => {
       if (!progressByUser[p.userId]) {
         progressByUser[p.userId] = [];
       }
       progressByUser[p.userId].push(p);
     });
 
-    const enrichedUsers = users.map(user => {
+    const enrichedUsers = users.map((user) => {
       const userProgress = progressByUser[user._id] || [];
 
-      const enrolledCourses = userProgress.map(p => {
-        const courseInfo = courseMap[p.courseId] || { title: "Unknown Course", totalLessons: 0 };
+      const enrolledCourses = userProgress.map((p) => {
+        const courseInfo = courseMap[p.courseId] || {
+          title: "Unknown Course",
+          totalLessons: 0,
+        };
 
         const total = courseInfo.totalLessons;
         const done = p.completedLessons.length;
 
-        const progressPercent = total > 0 ? Math.round((done / total) * 100) : 0;
+        const progressPercent =
+          total > 0 ? Math.round((done / total) * 100) : 0;
 
         return {
           courseId: p.courseId,
           courseTitle: courseInfo.title,
-          progress: progressPercent
+          progress: progressPercent,
         };
       });
 
@@ -54,26 +60,26 @@ export const getAllUsers = async (req, res) => {
         role: user.role,
         registeredAt: user.createdAt,
         isVerified: user.isVerified,
-        enrolledCourses
+        enrolledCourses,
       };
     });
-    
+
     return res.json({
       success: true,
-      users:enrichedUsers
+      users: enrichedUsers,
     });
-
   } catch (err) {
     console.error("ADMIN GET USERS ERROR:", err);
     res.status(500).json({
       success: false,
-      message: "Failed to load users"
+      message: "Failed to load users",
     });
   }
 };
 
 export const getUserById = async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
 
     if (!id) {
@@ -115,6 +121,7 @@ export const getUserById = async (req, res) => {
 
 export const updateUserRole = async (req, res) => {
   try {
+    await connectDB();
     const { userId, role } = req.body;
 
     if (!userId || !role) {
@@ -170,6 +177,7 @@ export const updateUserRole = async (req, res) => {
 
 export const deleteUser = async (req, res) => {
   try {
+    await connectDB();
     const { id } = req.params;
 
     if (!id) {
@@ -217,6 +225,7 @@ export const deleteUser = async (req, res) => {
 
 export const getDashboardStats = async (req, res) => {
   try {
+    await connectDB();
     const totalUsers = await User.countDocuments();
     const totalStudents = await User.countDocuments({ role: "student" });
     const totalAdmins = await User.countDocuments({ role: "admin" });
@@ -262,6 +271,7 @@ export const getDashboardStats = async (req, res) => {
 
 export const toggleUserVerification = async (req, res) => {
   try {
+    await connectDB();
     const { userId } = req.body;
 
     if (!userId) {

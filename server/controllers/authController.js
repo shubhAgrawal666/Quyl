@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import User from "../models/userModel.js";
 import transporter from "../config/nodemailer.js";
 import generateToken from "../utils/generateToken.js";
+import connectDB from "../config/mongodb.js";
 import "dotenv/config";
 
 export const register = async (req, res) => {
@@ -12,6 +13,7 @@ export const register = async (req, res) => {
   }
 
   try {
+    await connectDB();
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.json({ success: false, message: "User Already Exists!" });
@@ -72,6 +74,7 @@ export const register = async (req, res) => {
 
 export const verifyEmail = async (req, res) => {
   try {
+    await connectDB();
     const { userId, otp } = req.body;
 
     if (!userId || !otp) {
@@ -118,6 +121,7 @@ export const verifyEmail = async (req, res) => {
 
 export const resendOTP = async (req, res) => {
   try {
+    await connectDB();
     const { userId } = req.body;
 
     if (!userId) {
@@ -169,6 +173,7 @@ export const login = async (req, res) => {
   }
 
   try {
+    await connectDB();
     const user = await User.findOne({ email });
 
     if (!user) {
@@ -207,6 +212,7 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
   try {
+    await connectDB();
     res.clearCookie("token", {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -221,6 +227,7 @@ export const logout = async (req, res) => {
 
 export const isAuthenticated = async (req, res) => {
   try {
+    await connectDB();
     const user = await User.findById(req.user._id).select("name email role");
 
     if (!user) {
@@ -232,10 +239,9 @@ export const isAuthenticated = async (req, res) => {
       user: {
         name: user.name,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
     return res.json({ success: false, message: error.message });
   }
@@ -243,6 +249,7 @@ export const isAuthenticated = async (req, res) => {
 
 export const sendResetOtp = async (req, res) => {
   try {
+    await connectDB();
     const { email } = req.body;
 
     if (!email) {
@@ -285,6 +292,7 @@ export const sendResetOtp = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
+    await connectDB();
     const { email, otp, newPassword } = req.body;
 
     if (!email || !otp || !newPassword) {

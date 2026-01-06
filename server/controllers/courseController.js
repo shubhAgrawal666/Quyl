@@ -2,9 +2,11 @@ import jwt from "jsonwebtoken";
 import Course from "../models/courseModel.js";
 import User from "../models/userModel.js";
 import Progress from "../models/ProgressModel.js";
+import connectDB from "../config/mongodb.js";
 
 export const createCourse = async (req, res) => {
   try {
+    await connectDB();
     const { title, description, category, thumbnail, lessons } = req.body;
 
     if (!title || !description || !category || !thumbnail) {
@@ -48,6 +50,7 @@ export const createCourse = async (req, res) => {
 
 export const getCourses = async (req, res) => {
   try {
+    await connectDB();
     const { category, search } = req.query;
 
     const filter = {};
@@ -79,11 +82,14 @@ export const getCourses = async (req, res) => {
 
 export const getCourseBySlug = async (req, res) => {
   try {
+    await connectDB();
     const { slug } = req.params;
 
-    const course = await Course.findOne({ slug }).lean(); 
+    const course = await Course.findOne({ slug }).lean();
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
     }
 
     let loggedInUserId = null;
@@ -93,17 +99,15 @@ export const getCourseBySlug = async (req, res) => {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         loggedInUserId = String(decoded.id);
-      } catch (err) {
-      }
-    }    
-    const enrolledIds = (course.studentsEnrolled || []).map(id => String(id));
+      } catch (err) {}
+    }
+    const enrolledIds = (course.studentsEnrolled || []).map((id) => String(id));
     const isEnrolled = enrolledIds.includes(loggedInUserId);
     return res.json({
       success: true,
       course,
       isEnrolled,
     });
-
   } catch (error) {
     console.error("getCourseBySlug error:", error);
     return res.status(500).json({ success: false, message: "Server error" });
@@ -112,6 +116,7 @@ export const getCourseBySlug = async (req, res) => {
 
 export const updateCourse = async (req, res) => {
   try {
+    await connectDB();
     const { title, description, category, thumbnail, lessons } = req.body;
     const { slug } = req.params;
 
@@ -132,7 +137,7 @@ export const updateCourse = async (req, res) => {
       course.lessons = lessons;
     }
 
-    await course.save(); 
+    await course.save();
 
     res.status(200).json({
       success: true,
@@ -158,9 +163,9 @@ export const updateCourse = async (req, res) => {
   }
 };
 
-
 export const deleteCourse = async (req, res) => {
   try {
+    await connectDB();
     const { slug } = req.params;
     const course = await Course.findOne({ slug });
 
@@ -194,6 +199,7 @@ export const deleteCourse = async (req, res) => {
 
 export const addLesson = async (req, res) => {
   try {
+    await connectDB();
     const { title, youtubeUrl, duration } = req.body;
     const { slug } = req.params;
 
@@ -231,6 +237,7 @@ export const addLesson = async (req, res) => {
 
 export const updateLesson = async (req, res) => {
   try {
+    await connectDB();
     const { slug, lessonSlug } = req.params;
     const { title, youtubeUrl, duration } = req.body;
 
@@ -272,6 +279,7 @@ export const updateLesson = async (req, res) => {
 
 export const deleteLesson = async (req, res) => {
   try {
+    await connectDB();
     const { slug, lessonSlug } = req.params;
 
     const course = await Course.findOne({ slug });
@@ -321,6 +329,7 @@ export const deleteLesson = async (req, res) => {
 
 export const enrollCourse = async (req, res) => {
   try {
+    await connectDB();
     const { slug } = req.body;
     const userId = req.user._id;
 
@@ -382,52 +391,52 @@ export const enrollCourse = async (req, res) => {
 
 export const markLessonComplete = async (req, res) => {
   try {
+    await connectDB();
     const { slug, lessonIndex } = req.body;
     const userId = req.user._id;
 
     const course = await Course.findOne({ slug });
     if (!course) {
-      return res.status(404).json({ success: false, message: "Course not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Course not found" });
     }
 
     const lesson = course.lessons[lessonIndex];
     if (!lesson) {
-      return res.status(404).json({ success: false, message: "Lesson not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Lesson not found" });
     }
 
     let progress = await Progress.findOne({ userId, courseId: course._id });
 
     if (!progress) {
-      
       progress = await Progress.create({
         userId,
         courseId: course._id,
         completedLessons: [],
         lastAccessedAt: new Date(),
-        completionPercentage: 0
+        completionPercentage: 0,
       });
     }
 
-    
     const alreadyCompleted = progress.completedLessons.some(
       (cl) => cl.lessonSlug === lesson.slug
     );
 
     if (alreadyCompleted) {
-      
       progress.completedLessons = progress.completedLessons.filter(
         (cl) => cl.lessonSlug !== lesson.slug
       );
     } else {
-      
       progress.completedLessons.push({
         lessonSlug: lesson.slug,
         lessonIndex,
-        completedAt: new Date()
+        completedAt: new Date(),
       });
     }
 
-    
     progress.updateCompletionPercentage(course.lessons.length);
     progress.lastAccessedAt = new Date();
 
@@ -435,19 +444,23 @@ export const markLessonComplete = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      message: alreadyCompleted ? "Lesson marked incomplete" : "Lesson marked complete",
+      message: alreadyCompleted
+        ? "Lesson marked incomplete"
+        : "Lesson marked complete",
       completedLessons: progress.completedLessons,
-      completionPercentage: progress.completionPercentage
+      completionPercentage: progress.completionPercentage,
     });
-
   } catch (error) {
     console.error("Toggle lesson error:", error);
-    return res.status(500).json({ success: false, message: "Failed to update lesson status" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to update lesson status" });
   }
 };
 
 export const getProgress = async (req, res) => {
   try {
+    await connectDB();
     const { slug } = req.params;
     const userId = req.user._id;
 
@@ -499,7 +512,6 @@ export const getProgress = async (req, res) => {
       completionPercentage: progress.completionPercentage,
       lastAccessedAt: progress.lastAccessedAt,
     });
-
   } catch (error) {
     console.error("Get progress error:", error);
     res.status(500).json({
@@ -511,10 +523,12 @@ export const getProgress = async (req, res) => {
 
 export const getEnrolledCourses = async (req, res) => {
   try {
+    await connectDB();
     const user = await User.findById(req.user._id).populate({
       path: "enrolledCourses",
-      select: "title slug description category thumbnail createdBy lessons createdAt",
-      populate: { path: "createdBy", select: "name" }
+      select:
+        "title slug description category thumbnail createdBy lessons createdAt",
+      populate: { path: "createdBy", select: "name" },
     });
 
     const coursesWithProgress = await Promise.all(
@@ -523,7 +537,7 @@ export const getEnrolledCourses = async (req, res) => {
 
         let progress = await Progress.findOne({
           userId: req.user._id,
-          courseId: course._id
+          courseId: course._id,
         });
 
         if (totalLessons === 0) {
@@ -533,8 +547,8 @@ export const getEnrolledCourses = async (req, res) => {
               completedLessons: [],
               totalCompleted: 0,
               completionPercentage: 0,
-              lastAccessedAt: null
-            }
+              lastAccessedAt: null,
+            },
           };
         }
 
@@ -545,8 +559,8 @@ export const getEnrolledCourses = async (req, res) => {
               completedLessons: [],
               totalCompleted: 0,
               completionPercentage: 0,
-              lastAccessedAt: null
-            }
+              lastAccessedAt: null,
+            },
           };
         }
 
@@ -563,8 +577,8 @@ export const getEnrolledCourses = async (req, res) => {
             completedLessons: progress.completedLessons,
             totalCompleted: progress.completedLessons.length,
             completionPercentage: progress.completionPercentage,
-            lastAccessedAt: progress.lastAccessedAt
-          }
+            lastAccessedAt: progress.lastAccessedAt,
+          },
         };
       })
     );
@@ -572,9 +586,8 @@ export const getEnrolledCourses = async (req, res) => {
     res.status(200).json({
       success: true,
       count: coursesWithProgress.length,
-      courses: coursesWithProgress
+      courses: coursesWithProgress,
     });
-
   } catch (error) {
     console.error("Get enrolled courses error:", error);
     res.status(500).json({
