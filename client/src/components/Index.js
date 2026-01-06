@@ -5,6 +5,7 @@ import Signup from "./Auth/Signup.jsx";
 import Login from "./Auth/Login.jsx";
 import Verify from "./Auth/Verify.jsx";
 import Profile from "./Auth/Profile.jsx";
+import ForgotPassword from "./Auth/ForgotPassword.jsx";
 
 // USER SIDE COMPONENTS
 import Header from "./header/Header.jsx";
@@ -26,6 +27,7 @@ import ManageUsers from "./admin/ManageUsers.jsx";
 export {
   Signup,
   Login,
+  ForgotPassword,
   Verify,
   Profile,
   Header,

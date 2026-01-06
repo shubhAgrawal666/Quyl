@@ -14,6 +14,7 @@ import "./index.css";
 import {
   Signup,
   Login,
+  ForgotPassword,
   Verify,
   Profile,
   Home,
@@ -41,6 +42,7 @@ const router = createBrowserRouter(
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="login" element={<Login />} />
+        <Route path="forgot-password" element={<ForgotPassword />} />
         <Route path="signup" element={<Signup />} />
         <Route path="verify" element={<Verify />} />
         <Route path="profile" element={<Profile />} />

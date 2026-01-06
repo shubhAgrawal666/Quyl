@@ -38,6 +38,9 @@ export default function Login() {
       setLoading(false);
     }
   };
+  const handleForgotPassword = () => {
+    navigate("/forgot-password");
+  };
 
   return (
     <div className="min-h-screen w-full flex items-center justify-center bg-cover px-4">
@@ -82,7 +85,15 @@ export default function Login() {
               className="mt-1 rounded-lg border w-full p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
             />
           </div>
-
+          <div className="text-right">
+            <button
+              type="button"
+              onClick={handleForgotPassword}
+              className="text-sm text-blue-600 hover:underline"
+            >
+              Forgot password?
+            </button>
+          </div>
           <button
             type="submit"
             className="w-full mt-3 bg-blue-600 text-white p-2 rounded-lg font-semibold hover:bg-blue-700 transition"

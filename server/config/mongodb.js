@@ -22,9 +22,9 @@ const connectDB = async () => {
     cached.promise = mongoose.connect(mongoURL, {
       dbName: process.env.DB_NAME,
       maxPoolSize: 5,
-      serverSelectionTimeoutMS: 15000,
-      connectTimeoutMS: 15000,
-      socketTimeoutMS: 45000,
+      serverSelectionTimeoutMS: 30000,
+      connectTimeoutMS: 30000,
+      socketTimeoutMS: 90000,
     });
   }
 
