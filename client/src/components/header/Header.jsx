@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
-import logo from "../logo.jpg";
+import logo from "../logo.svg";
 
 export default function Header() {
   const { isAuthenticated, user, logout, loading } = useAuth();
@@ -37,7 +37,8 @@ export default function Header() {
   };
 
   const navLinkClass = ({ isActive }) =>
-    `text-lg block py-2 duration-200 ${isActive ? "text-orange-700" : "text-gray-700"
+    `text-lg block py-2 duration-200 ${
+      isActive ? "text-orange-700" : "text-gray-700"
     } hover:text-orange-700`;
 
   return (
@@ -45,10 +46,9 @@ export default function Header() {
       <nav className="bg-white/75 backdrop-blur-sm border-b border-gray-100 shadow-md">
         <div className="max-w-screen-xl mx-auto px-4 lg:px-6">
           <div className="flex items-center justify-between h-16">
-
             {/* Logo */}
             <Link to="/" className="flex items-center gap-5">
-              <div className="px-4 py-2 bg-white/60 backdrop-blur-md rounded-xl border border-white">
+              <div className="px-4 py-2 rounded-xl">
                 <img
                   src={logo}
                   alt="Logo"
@@ -59,7 +59,9 @@ export default function Header() {
 
             {/* Desktop Navigation */}
             <div className="font-semibold hidden md:flex items-center space-x-8">
-              <NavLink to="/" className={navLinkClass}>Home</NavLink>
+              <NavLink to="/" className={navLinkClass}>
+                Home
+              </NavLink>
 
               {!isAuthenticated && (
                 <NavLink to="/courses" className={navLinkClass}>
@@ -78,10 +80,7 @@ export default function Header() {
                   </NavLink>
 
                   {user?.role === "admin" && (
-                    <NavLink
-                      to="/admin"
-                      className={navLinkClass}
-                    >
+                    <NavLink to="/admin" className={navLinkClass}>
                       Admin Panel
                     </NavLink>
                   )}
@@ -92,7 +91,6 @@ export default function Header() {
             {/* Right Section */}
             {!loading && (
               <div className="flex items-center gap-3">
-
                 {/* Mobile Hamburger */}
                 <button
                   className="md:hidden text-2xl text-black"
@@ -165,7 +163,6 @@ export default function Header() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="font-semibold md:hidden bg-white border-t shadow-lg px-4 py-4 space-y-3">
-
             {/* NAV LINKS */}
             <NavLink
               to="/"
@@ -216,7 +213,7 @@ export default function Header() {
             )}
 
             {/* DIVIDER */}
-            <div className="border-t pt-3 mt-3"/>
+            <div className="border-t pt-3 mt-3" />
 
             {/* AUTH ACTIONS */}
             {!isAuthenticated && (
@@ -237,10 +234,9 @@ export default function Header() {
                   Sign Up
                 </Link>
               </div>
-            ) }
+            )}
           </div>
         )}
-
       </nav>
     </header>
   );
