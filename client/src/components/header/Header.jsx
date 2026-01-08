@@ -70,12 +70,12 @@ export default function Header() {
                 </NavLink>
 
                 <NavLink to="/courses" className={navLinkClass}>
-                  Explore
+                  Courses
                 </NavLink>
 
                 {user?.role === "admin" && (
                   <NavLink to="/admin" className={navLinkClass}>
-                    Admin
+                    Admin Panel
                   </NavLink>
                 )}
               </>
@@ -210,7 +210,7 @@ export default function Header() {
                               d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                             />
                           </svg>
-                          Sign out
+                          Log out
                         </button>
                       </div>
                     </div>

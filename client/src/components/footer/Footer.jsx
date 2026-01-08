@@ -70,26 +70,26 @@ export default function Footer() {
 
           {/* Resources */}
           <div>
-            <h3 className="text-white font-semibold mb-4">Resources</h3>
+            <h3 className="text-white font-semibold mb-4">Categories</h3>
             <ul className="space-y-3">
               <li>
-                <a href="#" className="text-sm hover:text-white transition-colors">
-                  Documentation
+                <a href="/courses" className="text-sm hover:text-white transition-colors">
+                  CS Fundamentals
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm hover:text-white transition-colors">
-                  Tutorials
+                <a href="/courses" className="text-sm hover:text-white transition-colors">
+                  Web Development
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm hover:text-white transition-colors">
-                  Support
+                <a href="/courses" className="text-sm hover:text-white transition-colors">
+                  Advanced CS Concepts
                 </a>
               </li>
               <li>
-                <a href="#" className="text-sm hover:text-white transition-colors">
-                  Community
+                <a href="/courses" className="text-sm hover:text-white transition-colors">
+                  Data Structures and Algorithms
                 </a>
               </li>
             </ul>

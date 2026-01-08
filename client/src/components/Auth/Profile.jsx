@@ -18,7 +18,7 @@ export default function Profile() {
 
   if (loading) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen w-full flex items-center justify-center">
         <div className="text-center">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-4 shadow-lg shadow-blue-500/25 animate-pulse">
             <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -33,7 +33,7 @@ export default function Profile() {
 
   if (!user) {
     return (
-      <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+      <div className="min-h-screen w-full flex items-center justify-center">
         <div className="card p-8 text-center">
           <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -111,7 +111,7 @@ export default function Profile() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 px-4 py-12 animate-fadeIn">
+    <div className="min-h-screen w-full px-4 py-12 animate-fadeIn">
       <div className="max-w-2xl mx-auto">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl -z-10" />
 
@@ -314,8 +314,8 @@ export default function Profile() {
         <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 animate-slideUp" style={{ animationDelay: '0.3s' }}>
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="font-semibold text-gray-800 mb-1">Sign Out</h3>
-              <p className="text-sm text-gray-600">Sign out from your account on this device</p>
+              <h3 className="font-semibold text-gray-800 mb-1">Log Out</h3>
+              <p className="text-sm text-gray-600">Log out from your account on this device</p>
             </div>
             <button
               onClick={handleLogout}

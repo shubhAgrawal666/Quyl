@@ -52,7 +52,7 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50 px-4 py-12 animate-fadeIn">
+    <div className="min-h-screen w-full flex items-center justify-center px-4 py-12 animate-fadeIn">
       <div className="w-full max-w-md">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl -z-10" />
 

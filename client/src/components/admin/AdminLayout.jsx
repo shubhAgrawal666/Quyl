@@ -35,7 +35,7 @@ export default function AdminLayout() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-50 via-blue-50 to-purple-50">
+    <div className="min-h-screen flex flex-col bg-gradient-to-b from-blue-200 via-purple-400 to-purple-200">
       {/* Main Website Header */}
       <Header />
 
@@ -53,7 +53,7 @@ export default function AdminLayout() {
           className={`
             fixed top-16 left-0 z-50
             h-[calc(100vh-4rem)]
-            w-72 bg-white/90 backdrop-blur-xl shadow-2xl border-r border-gray-200/50
+            w-72 bg-gradient-to-b from-blue-200 via-purple-400 to-purple-200 backdrop-blur-xl shadow-2xl border-r border-gray-200/50
             flex flex-col
             transform transition-all duration-300 ease-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
