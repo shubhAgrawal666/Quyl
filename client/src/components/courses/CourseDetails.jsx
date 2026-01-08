@@ -138,7 +138,7 @@ export default function CourseDetails() {
           <h1 className="text-3xl font-bold text-gray-800 mb-2">
             {course.title}
           </h1>
-          <p className="text-gray-600 mb-3">{course.description}</p>
+          <p className="text-gray-600 mb-3 whitespace-pre-line">{course.description}</p>
 
           <div className="flex items-center gap-3 text-sm text-gray-600">
             <span className="px-2 py-1 bg-gray-100 rounded-full">

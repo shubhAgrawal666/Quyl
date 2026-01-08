@@ -296,11 +296,13 @@ export const resetPassword = async (req, res) => {
     const { email, otp, newPassword } = req.body;
 
     if (!email || !otp || !newPassword) {
-      return res.json({ success: false, message: "All fields are required" });
+      return res
+        .status(400)
+        .json({ success: false, message: "All fields are required" });
     }
 
     if (newPassword.length < 8) {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "Password must be at least 8 characters",
       });
@@ -311,22 +313,24 @@ export const resetPassword = async (req, res) => {
     );
 
     if (!user) {
-      return res.json({ success: false, message: "User doesn't exist!" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User doesn't exist!" });
     }
 
     if (!user.resetOtp || user.resetOtp === "") {
-      return res.json({
+      return res.status(400).json({
         success: false,
         message: "No OTP request found. Please request a new OTP",
       });
     }
 
     if (Date.now() > user.resetOtpExpires) {
-      return res.json({ success: false, message: "OTP Expired" });
+      return res.status(400).json({ success: false, message: "OTP Expired" });
     }
 
     if (user.resetOtp !== otp) {
-      return res.json({ success: false, message: "Incorrect OTP" });
+      return res.status(400).json({ success: false, message: "Incorrect OTP" });
     }
 
     const hashedPassword = await bcrypt.hash(newPassword, 10);
@@ -341,6 +345,6 @@ export const resetPassword = async (req, res) => {
       message: "Password Changed Successfully!",
     });
   } catch (error) {
-    return res.json({ success: false, message: error.message });
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
