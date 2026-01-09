@@ -1,6 +1,5 @@
-// src/components/course/CourseDetails.jsx
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   getCourseBySlug,
   getProgress,
@@ -28,14 +27,16 @@ function getYouTubeEmbedUrl(youtubeUrl) {
 export default function CourseDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [course, setCourse] = useState(null);
-  const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
-
   const [enrollLoading, setEnrollLoading] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
+
+  const currentLessonIndex = Number(searchParams.get("lesson")) || 0;
 
   useEffect(() => {
     async function fetchCourse() {
@@ -70,15 +71,49 @@ export default function CourseDetails() {
     fetchCourse();
   }, [slug]);
 
-  if (loading) return <p className="text-center mt-10">Loading...</p>;
-  if (!course) return <p className="text-center mt-10">Course not found.</p>;
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-4 shadow-lg shadow-blue-500/25 animate-pulse">
+            <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <p className="text-lg font-semibold text-gray-700">Loading course...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!course) {
+    return (
+      <div className="min-h-screen w-full flex items-center justify-center px-4">
+        <div className="card p-8 text-center max-w-md">
+          <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Course not found</h2>
+          <p className="text-gray-600 mb-6">The course you're looking for doesn't exist or has been removed.</p>
+          <button
+            onClick={() => navigate("/courses")}
+            className="btn-primary"
+          >
+            Browse Courses
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   const lessons = course.lessons || [];
-  const currentLesson = lessons[currentLessonIndex] || {};
+  const safeIndex = Math.min(Math.max(currentLessonIndex, 0), lessons.length - 1);
+  const currentLesson = lessons[safeIndex] || {};
+  const isCompleted = completedLessons.some((l) => l.lessonSlug === currentLesson.slug);
 
-  const isCompleted = completedLessons.some(
-    (l) => l.lessonSlug === currentLesson.slug
-  );
+  const progressPercent = isEnrolled && lessons.length > 0
+    ? Math.round((completedLessons.length / lessons.length) * 100)
+    : 0;
 
   const handleEnroll = async () => {
     try {
@@ -86,10 +121,7 @@ export default function CourseDetails() {
       const res = await enrollCourse(slug);
 
       if (res.data.success) {
-        alert("Successfully enrolled!");
-
         setIsEnrolled(true);
-
         const progressRes = await getProgress(slug);
         if (progressRes.data.success) {
           setCompletedLessons(progressRes.data.completedLessons || []);
@@ -109,7 +141,7 @@ export default function CourseDetails() {
     if (!isEnrolled) return alert("Please enroll to mark lessons.");
 
     try {
-      const res = await markLessonComplete(slug, currentLessonIndex);
+      const res = await markLessonComplete(slug, safeIndex);
       if (res.data.success) {
         setCompletedLessons(res.data.completedLessons);
       }
@@ -118,144 +150,217 @@ export default function CourseDetails() {
     }
   };
 
-  const progressPercent = isEnrolled
-    ? Math.round((completedLessons.length / lessons.length) * 100)
-    : 0;
-
   return (
-    <div className="min-h-screen w-screen bg-gray-50 flex justify-center">
-      <div className="w-full max-w-6xl px-4 py-6">
+    <div className="min-h-screen w-full animate-fadeIn">
+      <div className="max-w-7xl mx-auto px-4 py-8">
 
+        {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
-          className="text-sm text-blue-600 mb-3 hover:underline"
+          onClick={() => navigate("/courses")}
+          className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
         >
-          ← Back
+          <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          Back to Courses
         </button>
 
-        {/* Header */}
-        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 mb-6">
-          <h1 className="text-3xl font-bold text-gray-800 mb-2">
-            {course.title}
-          </h1>
-          <p className="text-gray-600 mb-3">{course.description}</p>
+        {/* Course Header */}
+        <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp">
+          <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6">
+            <div className="flex-1">
+              <div className="flex items-center gap-3 mb-3">
+                <span className="px-3 py-1 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 text-white text-sm font-semibold">
+                  {course.category}
+                </span>
+                <span className="flex items-center gap-1.5 text-sm text-gray-600">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                  </svg>
+                  {lessons.length} lessons
+                </span>
+              </div>
+              <h1 className="text-3xl lg:text-4xl font-bold mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+                {course.title}
+              </h1>
+              <div className="relative">
+                <p
+                  className={`text-gray-600 text-lg whitespace-pre-line transition-all duration-300 ${showFullDesc ? "max-h-[1000px]" : "max-h-[4.5rem] overflow-hidden"
+                    }`}
+                >
+                  {course.description}
+                </p>
 
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <span className="px-2 py-1 bg-gray-100 rounded-full">
-              {course.category}
-            </span>
-            <span>{lessons.length} lessons</span>
-          </div>
+                {/* Fade gradient when collapsed */}
+                {!showFullDesc && (
+                  <div className="absolute bottom-0 left-0 w-full h-10 pointer-events-none" />
+                )}
 
-          <div className="mt-4">
-            <div className="flex justify-between text-xs text-gray-500 mb-1">
-              <span>Progress</span>
-              <span>{progressPercent}%</span>
+                {/* Toggle Button */}
+                {course.description?.length > 150 && (
+                  <button
+                    onClick={() => setShowFullDesc((prev) => !prev)}
+                    className="mt-2 flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    {showFullDesc ? "Show less" : "Show more"}
+                    <svg
+                      className={`w-4 h-4 transition-transform ${showFullDesc ? "rotate-180" : ""
+                        }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-              <div
-                className="h-2 bg-blue-600 rounded-full transition-all"
-                style={{ width: `${progressPercent}%` }}
-              />
-            </div>
-          </div>
-        </div>
 
-        {/* Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-[2fr,1fr] gap-6">
-
-          {/* VIDEO SECTION */}
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5">
-            <div className="relative w-full pb-[56.25%] bg-black rounded-xl overflow-hidden mb-4">
-              {isEnrolled ? (
-                <iframe
-                  src={getYouTubeEmbedUrl(currentLesson.youtubeUrl)}
-                  className="absolute top-0 left-0 w-full h-full"
-                  allowFullScreen
-                />
-              ) : (
-                <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/60 text-white text-lg font-semibold">
-                  🔒 Enroll to watch this lesson
-                </div>
-              )}
-            </div>
-
-            <h2 className="text-xl font-semibold text-gray-800">
-              {currentLesson.title}
-            </h2>
-            <p className="text-sm text-gray-500">
-              Lesson {currentLessonIndex + 1} of {lessons.length}
-            </p>
-
-            {/* ENROLL BUTTON (ONLY IF NOT ENROLLED) */}
             {!isEnrolled && (
               <button
                 onClick={handleEnroll}
                 disabled={enrollLoading}
-                className="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg font-medium"
+                className="btn-primary lg:min-w-[200px]"
               >
                 {enrollLoading ? "Enrolling..." : "Enroll Now"}
               </button>
             )}
-
-            {/* COMPLETE BUTTON (ONLY IF ENROLLED) */}
-            {isEnrolled && (
-              <button
-                onClick={handleToggleComplete}
-                className={`mt-4 px-4 py-2 rounded-lg text-sm font-semibold transition
-                  ${
-                    isCompleted
-                      ? "bg-gray-700 text-white hover:bg-gray-800"
-                      : "bg-blue-600 text-white hover:bg-blue-700"
-                  }`}
-              >
-                {isCompleted ? "Mark as Incomplete" : "Mark as Completed"}
-              </button>
-            )}
           </div>
 
-          {/* SIDEBAR */}
-          <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-5">
-            <h3 className="text-lg font-semibold text-gray-800 mb-3">
-              Lessons
-            </h3>
+          {/* Progress Bar */}
+          {isEnrolled && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <div className="flex items-center justify-between text-sm font-semibold text-gray-700 mb-2">
+                <span>Your Progress</span>
+                <span>{progressPercent}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+                <div
+                  className="h-3 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full transition-all duration-500"
+                  style={{ width: `${progressPercent}%` }}
+                />
+              </div>
+              <p className="text-xs text-gray-500 mt-2">
+                {completedLessons.length} of {lessons.length} lessons completed
+              </p>
+            </div>
+          )}
+        </div>
 
-            <div className="flex flex-col gap-2 max-h-[460px] overflow-y-auto">
-              {lessons.map((lesson, idx) => {
-                const active = idx === currentLessonIndex;
-                const completed = completedLessons.some(
-                  (c) => c.lessonSlug === lesson.slug
-                );
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                return (
-                  <button
-                    key={lesson.slug}
-                    onClick={() => {
-                      if (!isEnrolled) {
-                        alert("Enroll to open lessons.");
-                        return;
-                      }
-                      setCurrentLessonIndex(idx);
-                    }}
-                    className={`w-full text-left px-3 py-2 rounded-lg border text-sm flex justify-between
-                      ${
-                        active
-                          ? "border-blue-500 bg-blue-50"
-                          : "border-gray-200 hover:bg-gray-50"
-                      }`}
-                  >
-                    <span className="font-medium text-gray-800">
-                      Lesson {idx + 1}: {lesson.title}
+          {/* Video Player Section */}
+          <div className="lg:col-span-2 space-y-6">
+            <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-6 animate-slideUp" style={{ animationDelay: '0.1s' }}>
+              <div className="relative w-full pb-[56.25%] bg-gray-900 rounded-xl overflow-hidden mb-6 shadow-lg">
+                {isEnrolled ? (
+                  <iframe
+                    key={safeIndex}
+                    src={getYouTubeEmbedUrl(currentLesson.youtubeUrl)}
+                    className="absolute top-0 left-0 w-full h-full"
+                    allowFullScreen
+                    title={currentLesson.title}
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex flex-col items-center justify-center bg-gradient-to-br from-gray-900 to-gray-800 text-white p-8">
+                    <div className="w-20 h-20 rounded-2xl bg-white/10 backdrop-blur-xl border border-white/20 flex items-center justify-center mb-4">
+                      <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-xl font-bold mb-2">Enroll to watch</h3>
+                    <p className="text-gray-300 text-center">
+                      Get access to all lessons and track your progress
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="mb-6">
+                <div className="flex items-start justify-between gap-4 mb-2">
+                  <h2 className="text-2xl font-bold text-gray-800">
+                    {currentLesson.title}
+                  </h2>
+                  {isCompleted && (
+                    <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-sm font-semibold flex-shrink-0">
+                      Completed
                     </span>
+                  )}
+                </div>
+                <p className="text-sm text-gray-500">
+                  Lesson {safeIndex + 1} of {lessons.length}
+                </p>
+              </div>
 
-                    {completed && (
-                      <span className="px-2 py-1 text-xs bg-green-100 text-green-700 rounded-full flex items-center justify-center">
-                        Done
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
+              {isEnrolled && (
+                <button
+                  onClick={handleToggleComplete}
+                  className={`w-full py-3 px-6 rounded-xl font-semibold transition-all ${isCompleted
+                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
+                    : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25"
+                    }`}
+                >
+                  {isCompleted ? "Mark as Incomplete" : "Mark as Completed"}
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Lessons Sidebar */}
+          <div className="lg:col-span-1">
+            <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-6 animate-slideUp top-6" style={{ animationDelay: '0.2s' }}>
+              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                Course Lessons
+              </h3>
+
+              <div className="space-y-2 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar">
+                {lessons.map((lesson, idx) => {
+                  const active = idx === safeIndex;
+                  const completed = completedLessons.some((c) => c.lessonSlug === lesson.slug);
+
+                  return (
+                    <button
+                      key={lesson.slug}
+                      onClick={() => {
+                        if (!isEnrolled) {
+                          alert("Please enroll to access lessons.");
+                          return;
+                        }
+                        setSearchParams({ lesson: idx });
+                      }}
+                      className={`w-full text-left p-4 rounded-xl border-2 transition-all group ${active
+                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        : completed
+                          ? "border-green-200 bg-green-50 hover:border-green-300"
+                          : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                        }`}
+                    >
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="flex-1 min-w-0">
+                          <span className={`text-xs font-semibold ${active ? "text-blue-600" : "text-gray-500"}`}>
+                            Lesson {idx + 1}
+                          </span>
+                          <h4 className={`font-semibold text-sm line-clamp-2 ${active ? "text-blue-900" : "text-gray-800"}`}>
+                            {lesson.title}
+                          </h4>
+                        </div>
+
+                        {completed && (
+                          <div className="flex-shrink-0 text-green-600 font-bold">✔</div>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
