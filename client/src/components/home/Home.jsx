@@ -6,7 +6,7 @@ export default function Home() {
   const { isAuthenticated } = useAuth();
 
   return (
-   <div className="w-full min-h-screen bg-gradient-to-b from-blue-200 via-purple-400 to-purple-200">
+    <div className="w-full min-h-screen">
       {/* Hero Section */}
       <section className="section-padding max-w-7xl mx-auto">
         <div className="text-center max-w-4xl mx-auto animate-fade-in">
@@ -16,7 +16,7 @@ export default function Home() {
           </h1>
 
           <p className="text-xl sm:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Learn from industry experts. Build real projects. 
+            Learn from industry experts. Build real projects.
             Advance your career with courses designed for the modern developer.
           </p>
 
@@ -60,7 +60,7 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="section-paddin">
+      <section className="section-padding">
         <div className="max-w-7xl mx-auto">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <h2 className="text-4xl sm:text-5xl font-bold mb-4">
@@ -101,9 +101,9 @@ export default function Home() {
                 description: "From fundamentals to advanced topics, we've got you covered"
               }
             ].map((feature, index) => (
-              <div 
+              <div
                 key={index}
-                className="card p-8 hover:scale-105 transition-transform duration-300"
+                className="card p-8 hover:scale-105 transition-transform duration-300 bg-white/60 backdrop-blur-xl border border-white/30"
                 style={{ animationDelay: `${index * 100}ms` }}
               >
                 <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl text-white mb-6">
@@ -129,7 +129,7 @@ export default function Home() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 ">
             {[
               { name: "CS Fundamentals", icon: "💻", color: "from-blue-500 to-cyan-500" },
               { name: "Web Development", icon: "🗄️", color: "from-purple-500 to-pink-500" },
@@ -139,7 +139,7 @@ export default function Home() {
               <Link
                 key={index}
                 to="/courses"
-                className="group card p-8 text-center hover:scale-105 transition-all duration-300"
+                className="group card p-8 text-center hover:scale-105 transition-all duration-300 bg-white/60 backdrop-blur-xl border border-white/30"
               >
                 <div className={`inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br ${category.color} rounded-2xl text-4xl mb-4 group-hover:rotate-12 transition-transform`}>
                   {category.icon}
@@ -159,7 +159,7 @@ export default function Home() {
           <div className="max-w-5xl mx-auto">
             <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-purple-600 to-blue-700 p-12 text-center text-white shadow-2xl">
               <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4xIj48cGF0aCBkPSJNMzYgMzRjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00em0wLTEwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCA0IDQgNCA0IDQtMS43OSA0LTR6TTEyIDM0YzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMC0xMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCA0IDQgNCA0IDQtMS43OSA0LTR6bTAtMTBjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgNC4wOSA0IDQgNCA0LTEuNzkgNC00em0yNCAwYzAtMi4yMS0xLjc5LTQtNC00cy00IDEuNzktNCA0IDEuNzkgNCA0IDQgNC0xLjc5IDQtNHptMCAxMGMwLTIuMjEtMS43OS00LTQtNHMtNCAxLjc5LTQgNCA0IDQgNCA0IDQtMS43OSA0LTR6bTAgMTBjMC0yLjIxLTEuNzktNC00LTRzLTQgMS43OS00IDQgMS43OSA0IDQgNCA0LTEuNzkgNC00eiIvPjwvZz48L2c+PC9zdmc+')] opacity-30" />
-              
+
               <div className="relative z-10">
                 <h2 className="text-4xl sm:text-5xl font-bold mb-6">
                   Ready to transform your career?

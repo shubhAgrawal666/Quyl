@@ -43,21 +43,20 @@ export default function AdminLayout() {
         {/* Mobile Overlay */}
         {sidebarOpen && (
           <div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 md:hidden animate-fadeIn"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9998] animate-fadeIn"
             onClick={() => setSidebarOpen(false)}
           />
         )}
 
+
         {/* Sidebar */}
         <aside
           className={`
-            fixed top-16 left-0 z-50
-            h-[calc(100vh-4rem)]
-            w-72 bg-gradient-to-b from-blue-200 via-purple-400 to-purple-200 backdrop-blur-xl shadow-2xl border-r border-gray-200/50
+            fixed top-0 left-0 z-[9999] min-h-screen
+            w-72 bg-gradient-to-b from-blue-200 via-purple-400 to-purple-200 backdrop-blur-xl border-r border-gray-200/50
             flex flex-col
             transform transition-all duration-300 ease-out
             ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}
-            md:translate-x-0
           `}
         >
           {/* Admin Header */}
@@ -69,7 +68,7 @@ export default function AdminLayout() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-lg font-bold bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-lg font-bold bg-gradient-to-br from-blue-500 to-purple-600 bg-clip-text text-black">
                   Admin Panel
                 </h1>
                 <p className="text-xs text-gray-500">
@@ -86,10 +85,9 @@ export default function AdminLayout() {
               end
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${
-                  isActive
-                    ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-                    : "text-gray-700 hover:bg-gray-100"
+                `flex items-center gap-3 px-4 py-3 rounded-3xl font-medium text-sm transition-all ${isActive
+                  ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                  : "text-gray-700 hover:bg-white/50"
                 }`
               }
             >
@@ -107,10 +105,9 @@ export default function AdminLayout() {
               to="/admin/courses"
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${
-                  isActive
-                    ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-                    : "text-gray-700 hover:bg-gray-100"
+                `flex items-center gap-3 px-4 py-3 rounded-3xl font-medium text-sm transition-all ${isActive
+                  ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                  : "text-gray-700 hover:bg-white/50"
                 }`
               }
             >
@@ -128,10 +125,9 @@ export default function AdminLayout() {
               to="/admin/users"
               onClick={() => setSidebarOpen(false)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-xl font-medium text-sm transition-all ${
-                  isActive
-                    ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
-                    : "text-gray-700 hover:bg-gray-100"
+                `flex items-center gap-3 px-4 py-3 rounded-3xl font-medium text-sm transition-all ${isActive
+                  ? "bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/25"
+                  : "text-gray-700 hover:bg-white/50"
                 }`
               }
             >
@@ -148,7 +144,7 @@ export default function AdminLayout() {
 
           {/* Footer Info */}
           <div className="p-4 border-t border-gray-200">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-blue-50 to-purple-50 border border-blue-200">
+            <div className="p-3 rounded-xl bg-white/30 backdrop-blur-xl border border-white/30">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
                 <span className="text-xs font-semibold text-gray-700">System Status</span>
@@ -159,12 +155,13 @@ export default function AdminLayout() {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-6 md:p-8 w-full md:ml-72">
+        <main className="flex-1 p-6 md:p-8 w-full">
           {/* Mobile Menu Button */}
           <button
             onClick={() => setSidebarOpen(true)}
-            className="md:hidden mb-6 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-xl shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all"
+            className="mb-6 inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-br from-blue-500 to-purple-600 text-white rounded-3xl shadow-lg shadow-blue-500/25 hover:shadow-xl transition-all"
           >
+
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>

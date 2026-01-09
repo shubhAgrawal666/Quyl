@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useSearchParams } from "react-router-dom";
 import {
   getCourseBySlug,
   getProgress,
@@ -27,13 +27,16 @@ function getYouTubeEmbedUrl(youtubeUrl) {
 export default function CourseDetails() {
   const { slug } = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [course, setCourse] = useState(null);
-  const [currentLessonIndex, setCurrentLessonIndex] = useState(0);
   const [completedLessons, setCompletedLessons] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEnrolled, setIsEnrolled] = useState(false);
   const [enrollLoading, setEnrollLoading] = useState(false);
+  const [showFullDesc, setShowFullDesc] = useState(false);
+
+  const currentLessonIndex = Number(searchParams.get("lesson")) || 0;
 
   useEffect(() => {
     async function fetchCourse() {
@@ -104,8 +107,10 @@ export default function CourseDetails() {
   }
 
   const lessons = course.lessons || [];
-  const currentLesson = lessons[currentLessonIndex] || {};
+  const safeIndex = Math.min(Math.max(currentLessonIndex, 0), lessons.length - 1);
+  const currentLesson = lessons[safeIndex] || {};
   const isCompleted = completedLessons.some((l) => l.lessonSlug === currentLesson.slug);
+
   const progressPercent = isEnrolled && lessons.length > 0
     ? Math.round((completedLessons.length / lessons.length) * 100)
     : 0;
@@ -136,7 +141,7 @@ export default function CourseDetails() {
     if (!isEnrolled) return alert("Please enroll to mark lessons.");
 
     try {
-      const res = await markLessonComplete(slug, currentLessonIndex);
+      const res = await markLessonComplete(slug, safeIndex);
       if (res.data.success) {
         setCompletedLessons(res.data.completedLessons);
       }
@@ -148,9 +153,10 @@ export default function CourseDetails() {
   return (
     <div className="min-h-screen w-full animate-fadeIn">
       <div className="max-w-7xl mx-auto px-4 py-8">
+
         {/* Back Button */}
         <button
-          onClick={() => navigate(-1)}
+          onClick={() => navigate("/courses")}
           className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-gray-900 mb-6 transition-colors group"
         >
           <svg className="w-5 h-5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -177,9 +183,44 @@ export default function CourseDetails() {
               <h1 className="text-3xl lg:text-4xl font-bold mb-3 bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
                 {course.title}
               </h1>
-              <p className="text-gray-600 text-lg">
-                {course.description}
-              </p>
+              <div className="relative">
+                <p
+                  className={`text-gray-600 text-lg whitespace-pre-line transition-all duration-300 ${showFullDesc ? "max-h-[1000px]" : "max-h-[4.5rem] overflow-hidden"
+                    }`}
+                >
+                  {course.description}
+                </p>
+
+                {/* Fade gradient when collapsed */}
+                {!showFullDesc && (
+                  <div className="absolute bottom-0 left-0 w-full h-10 pointer-events-none" />
+                )}
+
+                {/* Toggle Button */}
+                {course.description?.length > 150 && (
+                  <button
+                    onClick={() => setShowFullDesc((prev) => !prev)}
+                    className="mt-2 flex items-center gap-1 text-sm font-semibold text-blue-600 hover:text-blue-700 transition-colors"
+                  >
+                    {showFullDesc ? "Show less" : "Show more"}
+                    <svg
+                      className={`w-4 h-4 transition-transform ${showFullDesc ? "rotate-180" : ""
+                        }`}
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  </button>
+                )}
+              </div>
+
             </div>
 
             {!isEnrolled && (
@@ -215,13 +256,14 @@ export default function CourseDetails() {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+
           {/* Video Player Section */}
           <div className="lg:col-span-2 space-y-6">
-            <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-6 animate-slideUp" style={{animationDelay: '0.1s'}}>
-              {/* Video Container */}
+            <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-6 animate-slideUp" style={{ animationDelay: '0.1s' }}>
               <div className="relative w-full pb-[56.25%] bg-gray-900 rounded-xl overflow-hidden mb-6 shadow-lg">
                 {isEnrolled ? (
                   <iframe
+                    key={safeIndex}
                     src={getYouTubeEmbedUrl(currentLesson.youtubeUrl)}
                     className="absolute top-0 left-0 w-full h-full"
                     allowFullScreen
@@ -242,7 +284,6 @@ export default function CourseDetails() {
                 )}
               </div>
 
-              {/* Lesson Info */}
               <div className="mb-6">
                 <div className="flex items-start justify-between gap-4 mb-2">
                   <h2 className="text-2xl font-bold text-gray-800">
@@ -250,27 +291,22 @@ export default function CourseDetails() {
                   </h2>
                   {isCompleted && (
                     <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-green-50 border border-green-200 text-green-700 text-sm font-semibold flex-shrink-0">
-                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                      </svg>
                       Completed
                     </span>
                   )}
                 </div>
                 <p className="text-sm text-gray-500">
-                  Lesson {currentLessonIndex + 1} of {lessons.length}
+                  Lesson {safeIndex + 1} of {lessons.length}
                 </p>
               </div>
 
-              {/* Action Button */}
               {isEnrolled && (
                 <button
                   onClick={handleToggleComplete}
-                  className={`w-full py-3 px-6 rounded-xl font-semibold transition-all ${
-                    isCompleted
-                      ? "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
-                      : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25"
-                  }`}
+                  className={`w-full py-3 px-6 rounded-xl font-semibold transition-all ${isCompleted
+                    ? "bg-gray-100 hover:bg-gray-200 text-gray-700 border border-gray-300"
+                    : "bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white shadow-lg shadow-blue-500/25"
+                    }`}
                 >
                   {isCompleted ? "Mark as Incomplete" : "Mark as Completed"}
                 </button>
@@ -280,17 +316,14 @@ export default function CourseDetails() {
 
           {/* Lessons Sidebar */}
           <div className="lg:col-span-1">
-            <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-6 animate-slideUp sticky top-6" style={{animationDelay: '0.2s'}}>
+            <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-6 animate-slideUp top-6" style={{ animationDelay: '0.2s' }}>
               <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
                 Course Lessons
               </h3>
 
               <div className="space-y-2 max-h-[calc(100vh-250px)] overflow-y-auto pr-2 custom-scrollbar">
                 {lessons.map((lesson, idx) => {
-                  const active = idx === currentLessonIndex;
+                  const active = idx === safeIndex;
                   const completed = completedLessons.some((c) => c.lessonSlug === lesson.slug);
 
                   return (
@@ -301,48 +334,27 @@ export default function CourseDetails() {
                           alert("Please enroll to access lessons.");
                           return;
                         }
-                        setCurrentLessonIndex(idx);
+                        setSearchParams({ lesson: idx });
                       }}
-                      className={`w-full text-left p-4 rounded-xl border-2 transition-all group ${
-                        active
-                          ? "border-blue-500 bg-blue-50 shadow-sm"
-                          : completed
+                      className={`w-full text-left p-4 rounded-xl border-2 transition-all group ${active
+                        ? "border-blue-500 bg-blue-50 shadow-sm"
+                        : completed
                           ? "border-green-200 bg-green-50 hover:border-green-300"
                           : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
-                      }`}
+                        }`}
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`text-xs font-semibold ${
-                              active ? "text-blue-600" : "text-gray-500"
-                            }`}>
-                              Lesson {idx + 1}
-                            </span>
-                          </div>
-                          <h4 className={`font-semibold text-sm line-clamp-2 ${
-                            active ? "text-blue-900" : "text-gray-800"
-                          }`}>
+                          <span className={`text-xs font-semibold ${active ? "text-blue-600" : "text-gray-500"}`}>
+                            Lesson {idx + 1}
+                          </span>
+                          <h4 className={`font-semibold text-sm line-clamp-2 ${active ? "text-blue-900" : "text-gray-800"}`}>
                             {lesson.title}
                           </h4>
                         </div>
 
                         {completed && (
-                          <div className="flex-shrink-0">
-                            <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
-                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                              </svg>
-                            </div>
-                          </div>
-                        )}
-
-                        {!completed && !isEnrolled && (
-                          <div className="flex-shrink-0">
-                            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                            </svg>
-                          </div>
+                          <div className="flex-shrink-0 text-green-600 font-bold">✔</div>
                         )}
                       </div>
                     </button>
@@ -351,6 +363,7 @@ export default function CourseDetails() {
               </div>
             </div>
           </div>
+
         </div>
       </div>
     </div>

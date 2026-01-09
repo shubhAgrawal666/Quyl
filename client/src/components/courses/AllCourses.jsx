@@ -95,14 +95,14 @@ export default function AllCourses() {
               placeholder="Search courses..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-12 pr-4 py-3 bg-white border-2 border-gray-200 rounded-full focus:border-blue-600 focus:outline-none transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-white/70 backdrop-blur-xl border-white/30 border-2 rounded-full focus:border-blue-600 focus:outline-none transition-colors"
             />
           </div>
 
           <select
             value={selectedCategory}
             onChange={(e) => setSelectedCategory(e.target.value)}
-            className="px-6 py-3 bg-white border-2 border-gray-200 rounded-full focus:border-blue-600 focus:outline-none transition-colors font-medium text-gray-700"
+            className="px-6 py-3 bg-white/70 backdrop-blur-xl border-white/30 border-2 rounded-full focus:border-blue-600 focus:outline-none transition-colors font-medium text-gray-700"
           >
             {categories.map((cat) => (
               <option key={cat} value={cat}>
@@ -133,7 +133,7 @@ export default function AllCourses() {
             return (
               <div
                 key={course._id}
-                className="bg-gray-100 group card overflow-hidden hover:scale-[1.02] transition-all duration-300"
+                className="bg-white/70 backdrop-blur-xl border border-white/30 group card overflow-hidden hover:scale-[1.02] transition-all duration-300"
                 style={{ animationDelay: `${index * 50}ms` }}
               >
                 {/* Thumbnail */}

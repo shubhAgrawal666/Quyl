@@ -167,7 +167,7 @@ export default function EditCourse() {
       {/* Form */}
       <form onSubmit={handleSave} className="space-y-6">
         {/* Basic Information */}
-        <div className="card p-6">
+        <div className="card p-6 rounded-3xl bg-white/50 backdrop-blur-xl border border-white/30">
           <h2 className="text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -183,7 +183,7 @@ export default function EditCourse() {
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 required
               />
             </div>
@@ -196,7 +196,7 @@ export default function EditCourse() {
                 <input
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
 
@@ -207,7 +207,7 @@ export default function EditCourse() {
                 <input
                   value={thumbnail}
                   onChange={(e) => setThumbnail(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                  className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 />
               </div>
             </div>
@@ -219,7 +219,7 @@ export default function EditCourse() {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                 rows={4}
               />
             </div>
@@ -227,7 +227,7 @@ export default function EditCourse() {
         </div>
 
         {/* Lessons Section */}
-        <div className="card p-6">
+        <div className="card p-6 rounded-3xl bg-white/50 backdrop-blur-xl border border-white/30">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
               <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,7 +239,7 @@ export default function EditCourse() {
             <button
               type="button"
               onClick={addVideo}
-              className="btn-secondary"
+              className="btn-secondary bg-white/30 backdrop-blur-xl border border-white/30"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -252,11 +252,11 @@ export default function EditCourse() {
             {videos.map((v, idx) => (
               <div
                 key={v.id}
-                className="p-4 rounded-xl bg-gray-50 border border-gray-200"
+                className="p-4 rounded-3xl bg-white/30 backdrop-blur-xl border border-white/30"
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white text-sm font-bold">
                       {idx + 1}
                     </div>
                     <span className="text-sm font-semibold text-gray-700">
@@ -283,7 +283,7 @@ export default function EditCourse() {
                       updateVideo(v.id, "title", e.target.value)
                     }
                     placeholder="Lesson title"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-2 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     required
                   />
 
@@ -293,7 +293,7 @@ export default function EditCourse() {
                       updateVideo(v.id, "url", e.target.value)
                     }
                     placeholder="YouTube Video URL"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-2 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     required
                   />
 
@@ -303,7 +303,7 @@ export default function EditCourse() {
                       updateVideo(v.id, "duration", e.target.value)
                     }
                     placeholder="Duration (e.g. 10:30)"
-                    className="w-full px-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 py-2 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                   />
                 </div>
               </div>

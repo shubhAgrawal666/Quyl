@@ -29,14 +29,14 @@ export default function Header() {
 
   const navLinkClass = ({ isActive }) =>
     `px-4 py-2 text-m font-medium rounded-full transition-all duration-200 ${isActive
-      ? "text-blue-600 bg-blue-50"
-      : "text-gray-700 hover:text-blue-600 hover:bg-gray-50"
+      ? "text-blue-600 bg-white/70"
+      : "text-gray-900 hover:text-blue-600 hover:bg-white/30"
     }`;
 
   return (
     <header
-  className={`sticky top-0 z-50 transition-all duration-300 bg-transparent backdrop-blur-xl shadow-sm`}
->
+      className={`sticky top-0 z-50 transition-all duration-300 bg-transparent backdrop-blur-xl shadow-sm`}
+    >
 
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
@@ -134,7 +134,7 @@ export default function Header() {
                 <div className="relative" ref={profileRef}>
                   <button
                     onClick={() => setOpenProfileMenu((p) => !p)}
-                    className="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-gray-100 transition-colors"
+                    className="flex items-center gap-3 px-3 py-2 rounded-full hover:bg-white/30 transition-colors"
                   >
                     <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center">
                       <span className="text-white text-sm font-semibold">
@@ -161,9 +161,9 @@ export default function Header() {
                   </button>
 
                   {openProfileMenu && (
-                    <div className="absolute right-0 mt-2 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 py-2 animate-scale-in">
+                    <div className="absolute right-0 mt-2 w-64 bg-gray-100 backdrop-blur-xl rounded-3xl shadow-xl border border-purple-100 py-2 animate-scale-in">
                       <div className="px-4 py-3 border-b border-gray-100">
-                        <p className="text-sm font-semibold text-gray-900">
+                        <p className="text-md font-semibold text-gray-900">
                           {user?.name}
                         </p>
                         <p className="text-xs text-gray-500 truncate mt-1">
@@ -175,7 +175,7 @@ export default function Header() {
                         <Link
                           to="/profile"
                           onClick={() => setOpenProfileMenu(false)}
-                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 hover:bg-gray-200 transition-colors"
                         >
                           <svg
                             className="w-5 h-5"
@@ -195,7 +195,7 @@ export default function Header() {
 
                         <button
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-100 transition-colors"
                         >
                           <svg
                             className="w-5 h-5"

@@ -105,14 +105,14 @@ export default function CoursesList() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Search courses by title or description..."
-            className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+            className="w-full pl-10 pr-4 py-3 rounded-3xl bg-white/70 backdrop-blur-xl border border-white/30 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
           />
         </div>
 
         <select
           value={filter}
           onChange={(e) => setFilter(e.target.value)}
-          className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all sm:w-56"
+          className="px-4 py-3 bg-white/70 backdrop-blur-xl border border-white/30 rounded-3xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all sm:w-56"
         >
           <option value="all">All Categories</option>
           {categories.map((cat) => (
@@ -133,7 +133,7 @@ export default function CoursesList() {
         {filtered.map((course, idx) => (
           <div
             key={course._id}
-            className="card p-6 hover:shadow-xl transition-all group animate-slideUp"
+            className="card p-6 hover:shadow-xl transition-all group animate-slideUp bg-white/50 backdrop-blur-xl border border-white/30"
             style={{animationDelay: `${idx * 0.05}s`}}
           >
             <div className="flex flex-col sm:flex-row gap-4 mb-4">
@@ -149,7 +149,7 @@ export default function CoursesList() {
               </div>
 
               <div className="flex-1 min-w-0">
-                <h2 className="font-bold text-lg text-gray-800 line-clamp-2 group-hover:text-purple-600 transition-colors">
+                <h2 className="font-bold text-lg text-gray-800 line-clamp-2 group-hover:text-purple-900 transition-colors">
                   {course.title}
                 </h2>
 

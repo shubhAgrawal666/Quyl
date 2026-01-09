@@ -47,17 +47,58 @@ export const register = async (req, res) => {
     await user.save();
 
     const mailOptions = {
-      from: process.env.GMAIL_USER,
-      to: email,
-      subject: "Verify Your Email - OTP",
-      html: `
-        <h2>Welcome ${name}!</h2>
-        <p>Your OTP for email verification is:</p>
-        <h1 style="color: #4CAF50; font-size: 32px;">${otp}</h1>
-        <p>This OTP will expire in 10 minutes.</p>
-        <p>If you didn't create this account, please ignore this email.</p>
-      `,
-    };
+  from: process.env.GMAIL_USER,
+  to: email,
+  subject: "Verify Your Email – OTP",
+  html: `
+    <div style=" padding:40px 0; font-family: Arial, sans-serif;">
+      <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg, #2563eb, #7c3aed); padding:24px 32px;">
+          <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:700;">
+            Welcome to Your Platform 🎉
+          </h1>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:32px;">
+          <p style="margin:0 0 12px; color:#1f2933; font-size:16px;">
+            Hello <strong>${name}</strong>,
+          </p>
+
+          <p style="margin:0 0 20px; color:#4b5563; font-size:15px; line-height:1.6;">
+            Thank you for creating an account with us. To complete your registration, please verify your email address using the code below.
+          </p>
+
+          <!-- OTP Box -->
+          <div style="margin:24px 0; padding:20px; background:linear-gradient(135deg, #eff6ff, #f5f3ff); border-radius:12px; text-align:center;">
+            <p style="margin:0 0 8px; color:#6b7280; font-size:14px;">
+              Your Verification Code
+            </p>
+            <div style="font-size:32px; font-weight:700; letter-spacing:4px; color:#4f46e5;">
+              ${otp}
+            </div>
+          </div>
+
+          <p style="margin:0 0 12px; color:#4b5563; font-size:14px;">
+            This code will expire in <strong>10 minutes</strong>.
+          </p>
+
+          <p style="margin:0 0 24px; color:#6b7280; font-size:14px; line-height:1.6;">
+            If you did not create this account, you can safely ignore this email.
+          </p>
+
+          <p style="margin:0; color:#1f2933; font-size:14px;">
+            We’re excited to have you onboard!<br/>
+            <strong>Your Platform Team</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
 
     await transporter.sendMail(mailOptions);
 
@@ -146,16 +187,58 @@ export const resendOTP = async (req, res) => {
     await user.save();
 
     const mailOptions = {
-      from: process.env.GMAIL_USER,
-      to: user.email,
-      subject: "Verify Your Email - New OTP",
-      html: `
-        <h2>Hello ${user.name}!</h2>
-        <p>Your new OTP for email verification is:</p>
-        <h1 style="color: #4CAF50; font-size: 32px;">${otp}</h1>
-        <p>This OTP will expire in 10 minutes.</p>
-      `,
-    };
+  from: process.env.GMAIL_USER,
+  to: user.email,
+  subject: "Verify Your Email – New OTP",
+  html: `
+    <div style=" padding:40px 0; font-family: Arial, sans-serif;">
+      <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg, #2563eb, #7c3aed); padding:24px 32px;">
+          <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:700;">
+            Email Verification
+          </h1>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:32px;">
+          <p style="margin:0 0 12px; color:#1f2933; font-size:16px;">
+            Hello <strong>${user.name}</strong>,
+          </p>
+
+          <p style="margin:0 0 20px; color:#4b5563; font-size:15px; line-height:1.6;">
+            You requested a new verification code. Please use the OTP below to verify your email address.
+          </p>
+
+          <!-- OTP Box -->
+          <div style="margin:24px 0; padding:20px; background:linear-gradient(135deg, #eff6ff, #f5f3ff); border-radius:12px; text-align:center;">
+            <p style="margin:0 0 8px; color:#6b7280; font-size:14px;">
+              Your One-Time Password (OTP)
+            </p>
+            <div style="font-size:32px; font-weight:700; letter-spacing:4px; color:#4f46e5;">
+              ${otp}
+            </div>
+          </div>
+
+          <p style="margin:0 0 12px; color:#4b5563; font-size:14px;">
+            This code will expire in <strong>10 minutes</strong>.
+          </p>
+
+          <p style="margin:0 0 24px; color:#6b7280; font-size:14px; line-height:1.6;">
+            If you did not request this code, you can safely ignore this email.
+          </p>
+
+          <p style="margin:0; color:#1f2933; font-size:14px;">
+            Regards,<br/>
+            <strong>Your Platform Team</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  `,
+};
+
 
     await transporter.sendMail(mailOptions);
 
@@ -272,14 +355,54 @@ export const sendResetOtp = async (req, res) => {
     const mailOptions = {
       from: process.env.GMAIL_USER,
       to: user.email,
-      subject: "Password Reset OTP",
+      subject: "Your Password Reset Code",
       html: `
-        <h2>Hello ${user.name}!</h2>
-        <p>Your OTP for password reset is:</p>
-        <h1 style="color: #4CAF50; font-size: 32px;">${otp}</h1>
-        <p>This OTP will expire in 10 minutes.</p>
-        <p>If you didn't request this, please ignore this email.</p>
-      `,
+    <div style=" padding:40px 0; font-family: Arial, sans-serif;">
+      <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:16px; overflow:hidden; box-shadow:0 10px 30px rgba(0,0,0,0.08);">
+
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg, #2563eb, #7c3aed); padding:24px 32px;">
+          <h1 style="margin:0; color:#ffffff; font-size:24px; font-weight:700;">
+            Password Reset Request
+          </h1>
+        </div>
+
+        <!-- Body -->
+        <div style="padding:32px;">
+          <p style="margin:0 0 12px; color:#1f2933; font-size:16px;">
+            Hello <strong>${user.name}</strong>,
+          </p>
+
+          <p style="margin:0 0 20px; color:#4b5563; font-size:15px; line-height:1.6;">
+            We received a request to reset your password. Please use the verification code below to proceed.
+          </p>
+
+          <!-- OTP Box -->
+          <div style="margin:24px 0; padding:20px; background:linear-gradient(135deg, #eff6ff, #f5f3ff); border-radius:12px; text-align:center;">
+            <p style="margin:0 0 8px; color:#6b7280; font-size:14px;">
+              Your One-Time Password (OTP)
+            </p>
+            <div style="font-size:32px; font-weight:700; letter-spacing:4px; color:#4f46e5;">
+              ${otp}
+            </div>
+          </div>
+
+          <p style="margin:0 0 12px; color:#4b5563; font-size:14px;">
+            This code will expire in <strong>10 minutes</strong>.
+          </p>
+
+          <p style="margin:0 0 24px; color:#6b7280; font-size:14px; line-height:1.6;">
+            If you did not request a password reset, you can safely ignore this email. Your account will remain secure.
+          </p>
+
+          <p style="margin:0; color:#1f2933; font-size:14px;">
+            Regards,<br/>
+            <strong>Your Platform Team</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  `,
     };
 
     await transporter.sendMail(mailOptions);

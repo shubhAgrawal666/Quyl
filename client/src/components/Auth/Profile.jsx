@@ -116,9 +116,9 @@ export default function Profile() {
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl -z-10" />
 
         {/* Profile Header */}
-        <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp">
+        <div className="card bg-white/50 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp">
           <div className="flex items-center gap-6">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-blue-500/25 flex-shrink-0">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-md shadow-blue-500/25 flex-shrink-0">
               <span className="text-3xl font-bold text-white">
                 {user.name?.charAt(0).toUpperCase() || "U"}
               </span>
@@ -137,7 +137,7 @@ export default function Profile() {
         </div>
 
         {/* Account Information */}
-        <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp" style={{ animationDelay: '0.1s' }}>
+        <div className="card bg-white/50 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp" style={{ animationDelay: '0.1s' }}>
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -153,7 +153,7 @@ export default function Profile() {
               <input
                 value={user.name}
                 readOnly
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed"
               />
             </div>
 
@@ -164,14 +164,14 @@ export default function Profile() {
               <input
                 value={user.email}
                 readOnly
-                className="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed"
+                className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-200 bg-gray-50 text-gray-700 cursor-not-allowed"
               />
             </div>
           </div>
         </div>
 
         {/* Reset Password Section */}
-        <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp" style={{ animationDelay: '0.2s' }}>
+        <div className="card bg-white/50 backdrop-blur-xl border border-gray-200/50 p-8 mb-6 animate-slideUp" style={{ animationDelay: '0.2s' }}>
           <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
             <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
@@ -191,7 +191,7 @@ export default function Profile() {
           )}
 
           {msg && (
-            <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-100 animate-slideUp">
+            <div className="mb-6 p-4 rounded-3xl bg-green-50 border border-green-100 animate-slideUp">
               <div className="flex items-start gap-3">
                 <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -241,7 +241,7 @@ export default function Profile() {
                   placeholder="000000"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-center text-lg tracking-widest"
+                  className="w-full px-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-center text-lg tracking-widest"
                   maxLength={6}
                   required
                 />
@@ -258,7 +258,7 @@ export default function Profile() {
                     placeholder="Enter new password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full px-4 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full px-4 pr-12 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     required
                   />
 
@@ -268,14 +268,12 @@ export default function Profile() {
                     className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {showNewPassword ? (
-                      // Eye Off (eye + slash)
                       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                         <line x1="3" y1="3" x2="21" y2="21" strokeWidth={2} strokeLinecap="round" />
                       </svg>
                     ) : (
-                      // Eye
                       <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -285,7 +283,6 @@ export default function Profile() {
                 </div>
               </div>
 
-
               <div className="flex gap-3">
                 <button
                   type="button"
@@ -294,7 +291,7 @@ export default function Profile() {
                     setOtp("");
                     setNewPassword("");
                   }}
-                  className="btn-secondary flex-1"
+                  className="btn-secondary flex-1 bg-white/30 backdrop-blur-xl"
                 >
                   Cancel
                 </button>
@@ -311,7 +308,7 @@ export default function Profile() {
         </div>
 
         {/* Logout Button */}
-        <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 animate-slideUp" style={{ animationDelay: '0.3s' }}>
+        <div className="card bg-white/50 backdrop-blur-xl border border-gray-200/50 p-8 animate-slideUp" style={{ animationDelay: '0.3s' }}>
           <div className="flex items-center justify-between">
             <div>
               <h3 className="font-semibold text-gray-800 mb-1">Log Out</h3>

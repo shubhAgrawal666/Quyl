@@ -81,7 +81,7 @@ export default function ForgotPassword() {
       <div className="w-full max-w-md">
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-3xl -z-10" />
 
-        <div className="card bg-white/80 backdrop-blur-xl border border-gray-200/50 p-8 animate-slideUp">
+        <div className="card bg-white/50 backdrop-blur-xl border border-gray-200/50 p-8 animate-slideUp">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 mb-4 shadow-lg shadow-blue-500/25 animate-scaleIn">
@@ -112,7 +112,7 @@ export default function ForgotPassword() {
           )}
 
           {msg && (
-            <div className="mb-6 p-4 rounded-xl bg-green-50 border border-green-100 animate-slideUp">
+            <div className="mb-6 p-4 rounded-3xl bg-green-50 border border-green-100 animate-slideUp">
               <div className="flex items-start gap-3">
                 <svg className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
@@ -139,7 +139,7 @@ export default function ForgotPassword() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full pl-10 pr-4 py-3 rounded-3xl bg-white/30 backdrop-blur-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     placeholder="you@example.com"
                     required
                   />
@@ -182,7 +182,7 @@ export default function ForgotPassword() {
                   type="text"
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-center text-lg tracking-widest"
+                  className="w-full px-4 py-3 rounded-3xl bg-white/20 backdrop-blur-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-center text-lg tracking-widest"
                   placeholder="000000"
                   maxLength={6}
                   required
@@ -204,7 +204,7 @@ export default function ForgotPassword() {
                     type={showNewPassword ? "text" : "password"}
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-3xl bg-white/20 backdrop-blur-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     placeholder="Enter new password"
                     required
                   />
@@ -246,7 +246,7 @@ export default function ForgotPassword() {
                     type={showConfirmPassword ? "text" : "password"}
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="w-full pl-10 pr-12 py-3 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                    className="w-full pl-10 pr-12 py-3 rounded-3xl bg-white/20 backdrop-blur-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                     placeholder="Confirm new password"
                     required
                   />
@@ -304,7 +304,7 @@ export default function ForgotPassword() {
                   setNewPassword("");
                   setConfirmPassword("");
                 }}
-                className="btn-secondary w-full"
+                className="btn-secondary w-full bg-white/20 backdrop-blur-xl"
               >
                 Back to Email
               </button>
